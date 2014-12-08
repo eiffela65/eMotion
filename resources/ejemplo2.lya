@@ -1,0 +1,13 @@
+class (EJEMPLO2)
+declare int A,B,C,RES;
+declare string RESULTADO;
+
+
+for (A=0;A<=10;A++)
+{ 
+B=A+1;
+A*B=C;
+RES=C;
+write RESULTADO="EL RESULTADO ES: "+RES;
+}
+

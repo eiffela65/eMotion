@@ -1,0 +1,10 @@
+class (ejemplo30_est_if)
+declare A of int;
+declare B,C of int;
+
+A=10;
+B=5;
+if(A>=B)
+B=(B+1);
+endif;
+endclass

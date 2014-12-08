@@ -1,0 +1,9 @@
+class (ejemplo25_est_read)
+
+#comentarios
+
+
+
+read ( A, B, C);
+
+endclass

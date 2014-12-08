@@ -1,0 +1,14 @@
+class ( EJEMPLO_Montse )
+
+mijo = 10;
+pi = 3.1416;
+sol[23] = (86 + 25);
+eloyito = (('g')*("medasmiedo"));
+
+if(eloyito)
+write (elotyito);
+else
+read(eloyito, pi, mijo);
+endif;
+
+endclass

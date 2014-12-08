@@ -1,0 +1,220 @@
+ACCIONES SEMANTICAS
+
+NOTA antes de generar cualquier cuadruplo primero se debe comparar
+que el id a usar haya estado declarado en la tabla de simbolos
+si no esta es error semantico
+Tambien antes de generar cuadruplo se debe comparar que los tipos 
+sean compatibles si no lo son es error semantico.
+
+900: comprobar que el nombre de la clase y el nombre del archivo sean iguales
+901: Meter el id a la pila de operandos 
+902: meter marca de fondo falso ( a pila de operadores
+903: Generar cuadruplo (dependiendo de la expresion que sea) 
+
+operador  operando1  operando2  resultado
+    *         A          B          C
+
+el cuadruplo se veria asi (*,A,B,C)
+
+[*operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores *]
+
+
+Luego de que ya se genero el cuadruplo
+sacar marca de fondo falso de pila de operadores
+
+904: Meter ya sea cteentera, ctereal, ctecaracter, ctestring o EL RESULTADO
+DE UNA EXPRESION a la pila de operandos
+
+905: Meter ya sea * / % a la pila de operadores
+906: Meter ya sea + - a pila de operadores
+907: Meter ya sea == != < <= > >= a pila de operadores
+908: Meter ! a pila de operadores
+909: Meter && a pila de operadores
+910: Meter || a pila de operadores
+911: Ponerle el tipo que es al id deacuerdo a la tabla de simbolos en la pila
+de tipos*ESTA ACCION LA REPETI POR ACCIDENTE EN LA 926*
+*TU SABES SI TOMAS ESTA O LA 926 PERO SOLO HAY QUE HACERLA UNA VEZ*
+912: PENDIENTE POR DIMENSIONADAS
+913: PENDIENTE POR DIMENSIONADAS
+914: Meter el id a la tabla de simbolos
+915: Generar el cuadruplo de asignacion
+(=,Operando,  ,resultado)
+por ejemplo A=10;
+(=, 10 ,  ,A)
+otro ejemplo (A=B+C) *suponiendo que el resultado de la operacion se guardo
+en el temporal T1
+(=, T1, ,A)
+
+916: ACCION DE (EST_IF) DE LO QUE SERIA EL THEN SI ESTUVIERA PERO COMO NO ESTA, 
+LA ACCION SE REALIZA DESPUES DE CERRAR EL PARENTESIS DE EXPR
+
+ACCION # 1 DEL PDF DEL EST_IF_THEN_ELSE 
+aux= pop de la pila de tipos
+SI aux es diferente de booleano entonces error semantico
+sino
+push a pila de saltos (cont) *con la posicion del contador* (METER FALSO)
+sacar resultado de pila de operandos
+generar gotofalso de resultado a una direccion pendiente por resolver ASI:
+
+(operador, operando1, operando2 resultado)
+(gotofalso, resultado*popPilaDeOperandos*,    , ? *pendiente por resolver*)
+
+
+917: ACCION DEL ELSE 
+ACCION #2 DEL PDF DEL EST_IF_THEN_ELSE 
+
+generar goto a direccion pendiente por resolver ASI:
+
+(operador,operando1,operando2,resultado)
+(goto,   ,   , ? *pendiente por resolver*)
+sacar falso de pila de saltos (pop pila de saltos)
+rellenar el falso con la posicion del contador 
+*ENTONCES AL HACER ESTO EL GOTOFALSO SE RELLENA Y QUEDA ASI POR EJEMPLO*
+
+(gotofalso, resultado*popPilaDeOperandos*,    , ? *pendiente por resolver*)
+(gotofalso, resultado*popPilaDeOperandos*,    , 8)
+
+push pila de saltos (cont-1)
+
+918: ACCION DEL ENDIF
+ACCION #3 DEL PDF DEL EST_IF_THEN_ELSE
+sacar fin de pila de saltos (pop pila de saltos)
+rellenar fin con la posicion de contador
+ENTONCES AL HACER ESTO EL GOTO SE RELLENA Y QUEDA ASI POR EJEMPLO*
+(goto,   ,   , ? *pendiente por resolver*)
+(goto,   ,   , 10)
+
+919: ACCION DEL WHILE DEL EST_WHILE
+ACCION #1 DEL PFD DEL ESTATUTO WHILE
+Meter cont en pila de saltos (push cont a pila de saltos)
+
+920: ACCION DEL DO DEL EST_WHILE *SI ESTUVIERA PERO COMO NO HAY DO
+ENTONCES SE EJECUTA DESPUES DEL PARENTESIS QUE CIERRA*
+ACCION #2 DEL PDF DEL ESTATUTO WHILE
+Sacar aux de pila de tipos *aux=pop de pila de tipos*
+SI aux es diferente de booleano entonces error semantico
+SINO 
+sacar resultado de pila de operandos (pop pila de operandos)
+generar gotofalso de resultado a una direccion pendiente por resolver ASI:
+
+(operador, operando1, operando2 resultado)
+(gotofalso, resultado*popPilaDeOperandos*,    , ? *pendiente por resolver*)
+
+PUSH pila de saltos (cont-1) *ES LO MISMO QUE HACER EL PUSH CON CONT ANTES DE
+HACER EL GOTOFALSO COMO LO PUSE EN EL EST_IF*
+
+921: ACCION DEL ENDWHILE
+ACCION #3 DEL PDF DEL ESTATUTO WHILE
+sacar falso de pila de saltos (aux=pop pila de saltos (falso)) , (aux2=pop pila de saltos (retorno))
+generar  goto a retorno ASI:
+
+(operador, operando1, operando2, resultado)
+(goto, , , retorno) POR EJEMPLO (goto,  ,  , 2)
+
+rellenar el falso con la posicion del contador DE MODO QUE RELLENAMOS EL GOTOFALSO QUE DEJAMOS ASI:
+
+(operador,operando1,operando2,resultado)
+(gotofalso, resultado*popPilaDeOperandos*,    , ? *pendiente por resolver*)
+(gotofalso, resultado*popPilaDeOperandos*,    , 7)
+
+922: ACCION DEL DO
+EN EL PDF NO TRABAJAMOS CON EL DO WHILE PERO ME FIJE Y ES PRACTICAMENTE IGUAL AL REPEAT
+ASI QUE DE AHI SAQUE LAS ACCIONES
+ACCION #1 DEL PDF DEL ESTATUTO REPEAT
+Meter contador a pila de saltos *push pila de saltos (cont)*
+
+923: ACCION DEL ENDDO
+EN EL PDF NO TRABAJAMOS CON EL DO WHILE PERO ME FIJE Y ES PRACTICAMENTE IGUAL AL REPEAT
+ASI QUE DE AHI SAQUE LAS ACCIONES
+ACCION #2 DEL PDF DEL ESTATUTO REPEAT
+generar gotofalso, pop pila de operandos*RESULTADO*,  ,pop pila de saltos EJEMPLO:
+
+(operador, operando1, operando2, resultado)
+(gotofalso, resultado *pop pila de operandos*,  , 2 *pop pila de saltos* )
+
+924: ACCION EN TERM DESPUES FACT
+ACCION #5 DE LA PAGINA 38 DEL PDF ADAPTADA A EMOTION
+SI el tope de la pila de operadores es igual a * / % ENTONCES
+generar cuadruplo (operador,operando1,operando2,resultado) donde:
+operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores
+
+925:ACCION EN EXPR5 DESPUES DE TERM
+ACCION #4 DE LA PAGINA 38 DEL PDF ADAPTADA A EMOTION
+SI el tope de la pila de operadores es igual a + -ENTONCES
+generar cuadruplo (operador,operando1,operando2,resultado) donde:
+operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores 
+
+926: ACCION DE TIPO EN ESTATUTO DE DECLARA
+ponerle el tipo a los id en tabla de simbolos *ESTA ACCION LA REPETI POR ACCIDENTE EN LA 911*
+*TU SABES SI TOMAS ESTA O LA 911 PERO SOLO HAY QUE HACERLA UNA VEZ*
+
+927: ACCION EN EXPR4 DE EXPR5 DESPUES DEL OPREL
+generar cuadruplo (operador,operando1,operando2,resultado) donde:
+operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores
+
+928: ACCION EN EXPR2 DESPUES EXPR3 
+SI el tope de la pila de operadores es igual a && (AND) ENTONCES
+generar cuadruplo (operador,operando1,operando2,resultado) donde:
+operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores 
+
+929: ACCION EN EXPR DESPUES DE EXPR2
+SI el tope de la pila de operadores es igual a || (OR) ENTONCES
+generar cuadruplo (operador,operando1,operando2,resultado) donde:
+operando2=pop pila de operandos
+operando1=pop pila de operandos
+resultado= temporal obtenido del avail
+
+si alguno de los operandos correspondia a un temporal ENTONCES regresarlo al avail
+push pila de operandos (resultado)
+pop pila de operadores 
+
+930: ACCION DE READ
+Generar cuadruplo
+(operador,operando1,operando2,resultado)
+(INPUT,  ,  , *id*)
+EJEMPLO:
+(INPUT,  ,  , A)
+
+931: ACCION DE WRITE
+dato=pop de la pila de operandos
+generar cuadruplo (OUTPUT,  ,  , dato)
+
+932: ACCION EN VARIOS ESTATUTOS PARA EL PARENTESIS QUE ABRE
+Meter marca de fondo falso a pila de operadores
+push ( a pila de operadores
+
+933: ME LA SALTE NO SE PORQUE jaja EN TODO CASO NO SE USA NUNCA, NI EXISTE
+
+934: ACCION EN VARIOS ESTATUTOS PARA EL PARENTESIS QUE CIERRA
+Sacar marca de fondo falso de pila de operadores
+pop pila de operadores ( ( )

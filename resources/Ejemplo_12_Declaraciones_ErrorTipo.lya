@@ -1,0 +1,16 @@
+class ( Ejemplo_12_Declaraciones_ErrorTipo ) 
+declare P of int;
+declare W_x of float;
+declare H_f_2 of char;
+declare J_P_z_8_3 of string;
+
+declare U [ 1 ] of int; declare U_3 [ 2 ] of float;
+declare U_x_q [ 3 ] of char;
+declare U_A_z_1_5 [ 4 ] of string;
+
+declare A_x [ 30 ] , B_7_z [50] of int;
+declare C_12 [ 4 ] , D [2] of float;
+declare E_z_1 [ 1 ] , F [9] of char;
+declare G1 [ 11 ] , g2 [22] of string;
+
+ endclass endclass

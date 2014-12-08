@@ -1,0 +1,5 @@
+class (ejemplo26_est_write)
+
+write ( (A+B) , (C+D) );
+
+endclass
