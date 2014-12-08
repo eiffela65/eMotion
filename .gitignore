@@ -13,6 +13,7 @@
 *.msm
 *.msp
 *.properties
+*.exe
 # =========================
 # Operating System Files
 # =========================
