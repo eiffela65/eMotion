@@ -1,19 +1,18 @@
-*.class
+#*.class
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.class
-*.xml
+#*.xml
 
 # Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
-*.properties
-*.exe
+#*.properties
+#*.exe
 # =========================
 # Operating System Files
 # =========================
