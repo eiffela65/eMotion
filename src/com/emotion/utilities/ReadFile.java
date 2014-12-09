@@ -23,6 +23,7 @@ public class ReadFile {
     private static ArrayList<String> tokens = new ArrayList();
     private static ArrayList<Integer> lexemas = new ArrayList();
     private static boolean status = true;
+    private static int count;
 
     /**
      *
@@ -39,7 +40,7 @@ public class ReadFile {
         try {
             br = new BufferedReader(new FileReader(file.getAbsolutePath()));
             String line = br.readLine();
-            int count = 1;
+            count = 1;
             System.out.println("************  ANALISIS LEXICO  **************");
             while (line != null) {
                 isLexema(line);
@@ -48,21 +49,20 @@ public class ReadFile {
             }
             br.close();
         } catch (FileNotFoundException e) {
-            throw new FileException("No se encontró el archivo");
+            throw new FileException("ERROR: No se encontró el archivo");
         } catch (IOException e) {
-            throw new FileException("No se puede leer el archivo. Puede estar corrupto");
+            throw new FileException("ERROR: No se puede leer el archivo. Puede estar corrupto");
         }
-        if (!status) {
-            throw new LexicoException("Error lexico encontrado en la linea: ");
-        }
-        SintacticAnalizer sintactic = new SintacticAnalizer();
-        sintactic.setRowGramar(0);
-        sintactic.setColumnGramar(0);
-        sintactic.setLexemas(lexemas);
-        sintactic.setTokens(tokens);
-        status = sintactic.startAnalisis(fileName);
-        if(status)
-            System.out.println("Analisis Sintactico completo sin errores");
+        if (status) {
+            System.out.println("INFO: Analisis Lexico termino satisfactoriamente.");
+            SintacticAnalizer sintactic = new SintacticAnalizer();
+            sintactic.setRowGramar(0);
+            sintactic.setColumnGramar(0);
+            sintactic.setLexemas(lexemas);
+            sintactic.setTokens(tokens);
+            status = sintactic.startAnalisis(fileName);
+        }else
+            System.out.println("INFO: Analisis Lexico termino con errores.");
         return status;
     }
 
@@ -76,8 +76,8 @@ public class ReadFile {
 //            System.out.println(line.charAt(i) + "  -  [" + baseLexico.getRowLexema() + " - " + baseLexico.getColumnLexema() + "]");
             rowLexema = baseLexico.getLexema(line.charAt(i));
             if (rowLexema == 6) {
-                if ((int)line.charAt(i) != 101) {
-                    if ((int)line.charAt(i) != 69) {
+                if ((int) line.charAt(i) != 101) {
+                    if ((int) line.charAt(i) != 69) {
                         rowLexema = 501;
                     }
                 }
@@ -95,8 +95,8 @@ public class ReadFile {
                 if (!Base.isReserved(token.toString().trim()) && rowLexema == 100) {
                     rowLexema = 101;
                 }
-                System.out.println("token ---->   " + token.toString().trim() + "  -  " + rowLexema);
-                if(rowLexema != 108){
+                System.out.println("INFO: token ---->   " + token.toString().trim() + "  -  " + rowLexema);
+                if (rowLexema != 108) {
                     tokens.add(token.toString().trim());
                     lexemas.add(rowLexema);
                 }
@@ -108,8 +108,8 @@ public class ReadFile {
                 continue;
 
             } else if (rowLexema > 199) {
-                token.append(line.charAt(i+1));
-                System.out.println("ERROR LEXICO Token invalido ---->   " + token.toString().trim() + "  -  " + rowLexema);
+                token.append(line.charAt(i + 1));
+                System.out.println("ERROR: Token invalido ---->   " + token.toString().trim() + "  -  " + rowLexema + "  en la linea " + count);
                 baseLexico.setRowLexema(0);
                 token.setLength(0);
                 status = false;

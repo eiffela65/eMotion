@@ -250,7 +250,7 @@ public class Emotion extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         boolean result = false;
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = new JFileChooser("./resources/");
         FileNameExtensionFilter extension = new FileNameExtensionFilter("Source Code", "lya");
         fc.setFileFilter(extension);
         int returnVal = fc.showOpenDialog(this);

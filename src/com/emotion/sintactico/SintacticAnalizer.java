@@ -75,18 +75,18 @@ public class SintacticAnalizer {
 
             int currentElement = productions.peek();
           // System.out.println("Tope de la pila:    " + currentElement);
-           // System.out.println("Elemento del Lexico:    " + lexemas.get(i));
+            // System.out.println("Elemento del Lexico:    " + lexemas.get(i));
             if (currentElement == lexemas.get(i)) {  // comparacion con el resultado de lexico
                 productions.pop();
                 i++;
-             //   System.out.println("_______________________________________________________________________________________");
+                //   System.out.println("_______________________________________________________________________________________");
                 continue;
             } else {
                 if (currentElement < 100) {
-                //    System.out.println("Procesando a un no terminal");
+                    //    System.out.println("Procesando a un no terminal");
                     productions.pop();
                     status = isValidToken(lexemas.get(i), tokens.get(i), currentElement);
-                 //   System.out.println("_______________________________________________________________________________________");
+                    //   System.out.println("_______________________________________________________________________________________");
                     if (status) {
                         continue;
                     }
@@ -104,19 +104,26 @@ public class SintacticAnalizer {
             }
 
             if (!status) {
-                System.out.println("ERROR SINTACTICO cerca de: " + tokens.get(i));
+                System.out.println("ERROR: Gramatica no se cumple cerca de: " + tokens.get(i));
                 break;
             }
             i++;
-       //     System.out.println("_______________________________________________________________________________________");
+            //     System.out.println("_______________________________________________________________________________________");
         }
-        if (!semanticStatus) {
-            System.out.println("ERROR SEMANTICO: " + semanticErrorMessage);
-        }
-        if (!productions.empty()) {
-            System.out.println("ERROR SINTACTICO: La pila de producciones no esta vacia.");
-            status = false;
-            showStack();
+
+        if (status) {
+            System.out.println("INFO: Analisis Sintactico completo sin errores");
+        } else {
+            System.out.println("WARNING: Analisis Sintactico detenido.");
+            System.out.println("************  ANALISIS SEMANTICO  **************");
+            if (!semanticStatus) {
+                System.out.println("ERROR: " + semanticErrorMessage);
+            }
+            if (!productions.empty()) {
+                System.out.println("ERROR: La pila de producciones no esta vacia.");
+                status = false;
+                showStack();
+            }
         }
         sematicAalizer.showSymbolTable();
         return status;
@@ -125,15 +132,15 @@ public class SintacticAnalizer {
     private void showStack() {
         int size = productions.size();
         for (int i = 0; i < size; i++) {
-        //    System.out.println("Elemento de la pila de producciones - " + productions.pop());
+            //    System.out.println("Elemento de la pila de producciones - " + productions.pop());
         }
     }
 
     private boolean fillFirtsProduction(int lexema, String token) {
         int column = sintacticBase.getColumnByToken(lexema, token);
-      //  System.out.println("[" + rowGramar + " - " + column + "]");
+        //  System.out.println("[" + rowGramar + " - " + column + "]");
         int prod = sintacticBase.gramar[rowGramar][column];
-       // System.out.println("El valor de la matriz es:   " + prod);
+        // System.out.println("El valor de la matriz es:   " + prod);
         if (prod == 600) {
             return false;
         }
@@ -145,7 +152,7 @@ public class SintacticAnalizer {
         int column = sintacticBase.getColumnByToken(lexema, token);
         int prod = sintacticBase.gramar[row][column];
      //   System.out.println("Columna en base a lexema: " + token);
-     //   System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
+        //   System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
         if (prod == 600) {
             return false;
         }
@@ -157,17 +164,17 @@ public class SintacticAnalizer {
         List poductionLine = sintacticBase.getPoduccionesByIndex(production);
         int size = poductionLine.size();
         //Collections.reverse(poductionLine);
-     //   System.out.println("Elementos de la produccion: " + production + "\n");
+        //   System.out.println("Elementos de la produccion: " + production + "\n");
         for (int i = size - 1; i >= 0; i--) {
-      //      System.out.print((int) poductionLine.get(i) + "   ");
+            //      System.out.print((int) poductionLine.get(i) + "   ");
             productions.add((int) poductionLine.get(i));
         }
-    //    System.out.println("\n");
+        //    System.out.println("\n");
 
     }
 
     private boolean runSemanticAction(int semanticAction, String value, int lexema) {
-      //  System.out.println("Accion: " + semanticAction + "  Valor a analizar: " + value + "  fileName " + fileName);
+        //  System.out.println("Accion: " + semanticAction + "  Valor a analizar: " + value + "  fileName " + fileName);
         boolean status = true;
         Symols symbol = new Symols();
         switch (semanticAction) {

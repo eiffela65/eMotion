@@ -3,7 +3,7 @@ declare P of int;
 declare W_x of float;
 declare H_f_2 of char;
 declare J_P_z_8_3 of string;
-
+@
 declare U [ 1 ] of int;
 declare U_2 [ 2 ] of float;
 declare U_x_q [ 3 ] of char;
