@@ -28,6 +28,30 @@ public class SemanticAnalizer {
     public boolean isVariable(String variable) {
         return semanticSymbolTable.containsKey(variable);
     }
+    
+    public boolean isEmptyOperandosStack(){
+        if(operandos.empty())
+            return true;
+        return false;
+    }
+    
+    public boolean isEmptyOperadoresStack(){
+        if(operadores.empty())
+            return true;
+        return false;
+    }
+    
+    public boolean isEmptyTiposStack(){
+        if(tipos.empty())
+            return true;
+        return false;
+    }
+    
+    public boolean isEmptySaltosStack(){
+        if(saltos.empty())
+            return true;
+        return false;
+    }
 
     public void showSymbolTable() {
         System.out.println("************  ANALISIS SEMANTICO  **************");
