@@ -1,45 +1,52 @@
 class ( ejemplo13_EST_ASIG )
-declare A,B,C,G of int;
-declare C,D of float;
-declare E of char;
-declare F of string;
 
-declare H, I,J,K of int;
-declare L,M of float;
-declare N of char;
-declare O of string;
+A= B;
 
-declare P,X,AA,Q,Y,AB,R,AC of int;
-declare T,AD,XA,AF of float;
-declare XB,AG of char;
-declare XC,AH of string;
-declare XD,XF,AI of int;
-
-A=! B;
 B=! 10;
+
 C=! 10.2;
+
 D=! 5.80e10;
+
 E=! 'a';
+
 F=! "hola";
 
-#EXPRESION DENTRO DE EXPRESION \n
+
+
+#COMENTARIO
+
 
 G=! (H);
+
 I=! (!J);
+
 K=!(!10);
+
 L=!(!10.20);
+
 M=!(!2.3e10);
+
 N=!(!'a');
+
 O=!(!"hola");
 
-#USO DE EXPRESION SIMPLE CON DIMENSIONADA \n
+
 P[ X ] = AA;
+
 Q[ !Y ] =AB;
+
 R[ !10 ] = AC;
+
 T[ !10.2 ] =AD;
+
 XA[!8.3e10] = AF;
-XB[ ! 'a' ] =AG;
+
+XB[ ! 'a' ] = AG;
+
 XC[ ! "hola" ] = AH;
+
 XD[ ! (XF) ] = AI;
+
 
 endclass

@@ -21,7 +21,7 @@ public class Base {
 {2,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,1,600,600,600,600,600,600,600,600,600,600,2,600,600,2,600,2,600,600,2,2,600},
 {3,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {4,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
-{600,600,600,600,600,600,5,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,79,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
+{600,600,7,600,600,600,5,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,79,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,7,600,600,600,5,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,7,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,8,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,9,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,10,11,12,13,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
@@ -31,7 +31,7 @@ public class Base {
 {16,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,25,600,600,600,600,600,600,600,600,600,600,600,16,25,25,16,25,16,25,25,16,16,600},
 {26,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {27,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
-{600,29,600,600,600,29,28,600,29,29,29,29,29,29,29,29,29,29,29,29,29,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
+{600,29,600,29,600,29,28,29,29,29,29,29,29,29,29,29,29,29,29,29,29,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,600,600,600,600,600,31,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,32,600,600,600,600,600,600,600,600,600,600},
 {600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,33,34,600,600,600,600,600,600,600,600},
@@ -44,18 +44,18 @@ public class Base {
 {42,600,600,600,42,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,42,600,600,600,600,600,600,600,600,42,42,42,42,42,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,43,600,600,44,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {45,600,600,600,45,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,45,600,600,600,600,600,600,600,600,45,45,45,45,45,600,600,600,600,600,600,600,600,600,600,600},
-{47,600,47,47,47,47,600,600,600,600,600,600,600,600,600,600,600,600,600,46,600,47,600,600,600,600,600,600,600,600,47,47,47,47,47,600,600,600,600,600,600,600,600,600,600,600},
+{47,600,47,47,47,47,600,47,600,600,600,600,600,600,600,600,600,600,600,46,600,47,600,600,600,600,600,600,600,600,47,47,47,47,47,600,600,600,600,600,600,600,600,600,600,600},
 {48,600,600,600,48,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,48,600,600,600,600,600,600,600,600,48,48,48,48,48,600,600,600,600,600,600,600,600,600,600,600},
-{50,600,50,50,50,50,600,600,600,600,600,600,600,600,600,600,600,600,600,600,49,50,600,600,600,600,600,600,600,600,50,50,50,50,50,600,600,600,600,600,600,600,600,600,600,600},
+{50,600,50,50,50,50,600,50,600,600,600,600,600,600,600,600,600,600,600,600,49,50,600,600,600,600,600,600,600,600,50,50,50,50,50,600,600,600,600,600,600,600,600,600,600,600},
 {51,600,600,600,51,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,51,600,600,600,600,600,600,600,600,51,51,51,51,51,600,600,600,600,600,600,600,600,600,600,600},
 {53,600,600,600,53,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,52,600,600,600,600,600,600,600,600,53,53,53,53,53,600,600,600,600,600,600,600,600,600,600,600},
 {54,600,600,600,54,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,54,54,54,54,54,600,600,600,600,600,600,600,600,600,600,600},
-{600,600,56,56,600,56,600,600,600,600,600,600,600,55,55,55,55,55,55,56,56,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
+{600,600,56,56,600,56,600,56,600,600,600,600,600,55,55,55,55,55,55,56,56,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {600,600,600,600,600,600,600,600,600,600,600,600,600,57,59,61,60,62,58,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
 {63,600,600,600,63,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,63,63,63,63,63,600,600,600,600,600,600,600,600,600,600,600},
-{66,600,66,66,66,66,600,600,64,65,600,600,600,66,66,66,66,66,66,66,66,600,600,600,600,600,600,600,600,600,66,66,66,66,66,600,600,600,600,600,600,600,600,600,600,600},
+{66,600,66,66,66,66,600,66,64,65,600,600,600,66,66,66,66,66,66,66,66,600,600,600,600,600,600,600,600,600,66,66,66,66,66,600,600,600,600,600,600,600,600,600,600,600},
 {67,600,600,600,67,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,67,67,67,67,67,600,600,600,600,600,600,600,600,600,600,600},
-{71,600,71,71,71,71,600,600,71,71,68,69,70,71,71,71,71,71,71,71,71,600,600,600,600,600,600,600,600,600,71,71,71,71,71,600,600,600,600,600,600,600,600,600,600,600},
+{71,600,71,71,71,71,600,71,71,71,68,69,70,71,71,71,71,71,71,71,71,600,600,600,600,600,600,600,600,600,71,71,71,71,71,600,600,600,600,600,600,600,600,600,600,600},
 {72,600,600,600,78,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,73,74,75,76,77,600,600,600,600,600,600,600,600,600,600,600}};
     
     private void initListas() {
@@ -138,10 +138,10 @@ producciones.add(prod24);
 List <Integer> prod25 = Arrays.asList();
 producciones.add(prod25);
 //27.	<EST_ASIG> →  <ASIG> = <EXPR> (26)
-List <Integer> prod26 = Arrays.asList(13,109,26);
+List <Integer> prod26 = Arrays.asList(13,109,926,26,927);
 producciones.add(prod26);
 //28.	<ASIG> →  id <DIM_ASIG> (27)
-List <Integer> prod27 = Arrays.asList(101,14);
+List <Integer> prod27 = Arrays.asList(101,925,14); // verificar accion para variables dimensionadas
 producciones.add(prod27);
 //29.	<DIM_ASIG> →  [<EXPR> <AUX5>] (28)
 List <Integer> prod28 = Arrays.asList(124,26,15,125); //NO SUPE COMO HACER DIMENSIONADAS
@@ -156,25 +156,25 @@ producciones.add(prod30);
 List <Integer> prod31 = Arrays.asList();
 producciones.add(prod31);
 //33.	<EST_IF> →  if(<EXPR>) <ESTATUTOS> <H> endif (32)
-List <Integer> prod32 = Arrays.asList(100,122,26,123,9,17,100);
+List <Integer> prod32 = Arrays.asList(100,122,26,928,123,9,17,100,930);
 producciones.add(prod32);
 //34.	<H> →  else <ESTATUTOS> (33)
-List <Integer> prod33 = Arrays.asList(100,9);
+List <Integer> prod33 = Arrays.asList(100,929,9);
 producciones.add(prod33);
 //35.	<H> →  € (34)
 List <Integer> prod34 = Arrays.asList();
 producciones.add(prod34);
 //36.	<EST_WHILE> →  while (<EXPR>) <ESTATUTOS> endwhile (35)
-List <Integer> prod35 = Arrays.asList(100,122,26,123,9,100);
+List <Integer> prod35 = Arrays.asList(100,122,26,931,123,9,100,932);
 producciones.add(prod35);
 //37.	<EST_DO> → do <ESTATUTOS> dowhile (<EXPR>) enddo (36)
-List <Integer> prod36 = Arrays.asList(100,9,100,122,26,123,100);
+List <Integer> prod36 = Arrays.asList(100,933,9,100,122,26,934,123,100,935);
 producciones.add(prod36);
 //38.	<EST_READ> →  read (<I>) (37)
 List <Integer> prod37 = Arrays.asList(100,122,21,123);
 producciones.add(prod37);
 //39.	<I> →  id <AUX6> (38)
-List <Integer> prod38 = Arrays.asList(101,22);
+List <Integer> prod38 = Arrays.asList(101,937,22);
 producciones.add(prod38);
 //40.	<AUX6> →  , <I>  (39)
 List <Integer> prod39 = Arrays.asList(127,21);
@@ -186,7 +186,7 @@ producciones.add(prod40);
 List <Integer> prod41 = Arrays.asList(100,122,24,123);
 producciones.add(prod41);
 //43.	<J> →  <EXPR> <AUX7>  (42)
-List <Integer> prod42 = Arrays.asList(26,25);
+List <Integer> prod42 = Arrays.asList(26,936,25);
 producciones.add(prod42);
 //44.	<AUX7> →  , <J>  (43)
 List <Integer> prod43 = Arrays.asList(127,24);
@@ -195,34 +195,34 @@ producciones.add(prod43);
 List <Integer> prod44 = Arrays.asList();
 producciones.add(prod44);
 //46.	<EXPR> →  <EXPR2> <AUX8> (45)
-List <Integer> prod45 = Arrays.asList(28,27);
+List <Integer> prod45 = Arrays.asList(28,923,27);
 producciones.add(prod45);
-//47.	<AUX8> →  || <EXPR2> <AUX8> (46)
-List <Integer> prod46 = Arrays.asList(105,28,27); //AQUI NO SE SI DEBO PONER DE NUEVO LA ACCION DE ARRIBA LA DE  AL LADO DE EXPR2
+//47.	<AUX8> →  || <EXPR> (46)
+List <Integer> prod46 = Arrays.asList(105,924,26); //AQUI NO SE SI DEBO PONER DE NUEVO LA ACCION DE ARRIBA LA DE  AL LADO DE EXPR2
 producciones.add(prod46);
 //48.	<AUX8> →  € (47)
 List <Integer> prod47 = Arrays.asList();
 producciones.add(prod47);
 //49.	<EXPR2> →  <EXPR3> <AUX9> (48)
-List <Integer> prod48 = Arrays.asList(30,29);
+List <Integer> prod48 = Arrays.asList(30,921,29);
 producciones.add(prod48);
-//50.	<AUX9> →  && <EXP3> <AUX9> (49)
-List <Integer> prod49 = Arrays.asList(117,30,29); //AQUI NO SE SI DEBO PONER DE NUEVO LACCION DE ARRIBA LA DEL AL LADO DE EXPR3
+//50.	<AUX9> →  && <EXPR2> (49)
+List <Integer> prod49 = Arrays.asList(117,922,28); //AQUI NO SE SI DEBO PONER DE NUEVO LACCION DE ARRIBA LA DEL AL LADO DE EXPR3
 producciones.add(prod49);
 //51.	<AUX9> →  € (50)
 List <Integer> prod50 = Arrays.asList();
 producciones.add(prod50);
 //52.	<EXPR3> →  <NOT> <EXPR4> (51)
-List <Integer> prod51 = Arrays.asList(31,32);
+List <Integer> prod51 = Arrays.asList(31,32,920);
 producciones.add(prod51);
 //53.	<NOT> → ! (52)
-List <Integer> prod52 = Arrays.asList(115);
+List <Integer> prod52 = Arrays.asList(115,919);
 producciones.add(prod52);
 //54.	<NOT> → € (53)
 List <Integer> prod53 = Arrays.asList();
 producciones.add(prod53);
 //55.	<EXPR4> →  <EXPR5> <M> (54)
-List <Integer> prod54 = Arrays.asList(35,33);
+List <Integer> prod54 = Arrays.asList(35,33,918);
 producciones.add(prod54);
 //56.	<M> →  <OPREL> <EXPR5> (55)
 List <Integer> prod55 = Arrays.asList(34,35);
@@ -231,46 +231,46 @@ producciones.add(prod55);
 List <Integer> prod56 = Arrays.asList();
 producciones.add(prod56);
 //58.	<OPREL> → ==  (57)
-List <Integer> prod57 = Arrays.asList(110);
+List <Integer> prod57 = Arrays.asList(110,917);
 producciones.add(prod57);
 //59.	<OPREL> → !=  (58)
-List <Integer> prod58 = Arrays.asList(116);
+List <Integer> prod58 = Arrays.asList(116,917);
 producciones.add(prod58);
 //60.	<OPREL> → <  (59)
-List <Integer> prod59 = Arrays.asList(111);
+List <Integer> prod59 = Arrays.asList(111,917);
 producciones.add(prod59);
 //61.	<OPREL> → <=  (60)
-List <Integer> prod60 = Arrays.asList(112);
+List <Integer> prod60 = Arrays.asList(112,917);
 producciones.add(prod60);
 //62.	<OPREL> → >  (61)
-List <Integer> prod61 = Arrays.asList(113);
+List <Integer> prod61 = Arrays.asList(113,917);
 producciones.add(prod61);
 //63.	<OPREL> → >=  (62)
-List <Integer> prod62 = Arrays.asList(114);
+List <Integer> prod62 = Arrays.asList(114,917);
 producciones.add(prod62);
 //64.	<EXPR5> →  <TERM> <AUX10> (63)
-List <Integer> prod63 = Arrays.asList(37,36);
+List <Integer> prod63 = Arrays.asList(37,914,36);
 producciones.add(prod63);
 //65.	<AUX10> →  + <EXPR5>  (64)
-List <Integer> prod64 = Arrays.asList(118,35);
+List <Integer> prod64 = Arrays.asList(118,915,35);
 producciones.add(prod64);
 //66.	<AUX10> → - <EXPR5>  (65)
-List <Integer> prod65 = Arrays.asList(35);
+List <Integer> prod65 = Arrays.asList(119,916,35);
 producciones.add(prod65);
 //67.	<AUX10> →  €  (66)
 List <Integer> prod66 = Arrays.asList();
 producciones.add(prod66);
 //68.	<TERM> →  <FACT> <AUX11>  (67)
-List <Integer> prod67 = Arrays.asList(39,38);
+List <Integer> prod67 = Arrays.asList(39,910,38);
 producciones.add(prod67);
 //69.	<AUX11> →  * <TERM>  (68)
-List <Integer> prod68 = Arrays.asList(120,37);
+List <Integer> prod68 = Arrays.asList(120,911,37);
 producciones.add(prod68);
 //70.	<AUX11> →  / <TERM>   (69)
-List <Integer> prod69 = Arrays.asList(121,37);
+List <Integer> prod69 = Arrays.asList(121,912,37);
 producciones.add(prod69);
 //71.	<AUX11> →  % <TERM>  (70)
-List <Integer> prod70 = Arrays.asList(128,37);
+List <Integer> prod70 = Arrays.asList(128,913,37);
 producciones.add(prod70);
 //72.	<AUX11> →  €  (71)
 List <Integer> prod71 = Arrays.asList();
@@ -279,22 +279,22 @@ producciones.add(prod71);
 List <Integer> prod72 = Arrays.asList(13);
 producciones.add(prod72);
 //74.	<FACT> →  cteentera  (73)
-List <Integer> prod73 = Arrays.asList(102);
+List <Integer> prod73 = Arrays.asList(102,903);
 producciones.add(prod73);
 //75.	<FACT> →  ctereal  (74)
-List <Integer> prod74 = Arrays.asList(103);
+List <Integer> prod74 = Arrays.asList(103,904);
 producciones.add(prod74);
 //76.	<FACT> →  ctenotacion  (75)
-List <Integer> prod75 = Arrays.asList(104);
+List <Integer> prod75 = Arrays.asList(104,905);
 producciones.add(prod75);
 //77.	<FACT> →  ctecaracter  (76)
-List <Integer> prod76 = Arrays.asList(106);
+List <Integer> prod76 = Arrays.asList(106,906);
 producciones.add(prod76);
 //78.	<FACT> →  ctestring  (77)
-List <Integer> prod77 = Arrays.asList(107);
+List <Integer> prod77 = Arrays.asList(107,907);
 producciones.add(prod77);
 //79.	<FACT> →  ( <EXPR> )  (78)
-List <Integer> prod78 = Arrays.asList(122,26,123);
+List <Integer> prod78 = Arrays.asList(122,908,26,123,909);
 producciones.add(prod78);
 //80.	<C> →  €   (80)
 List <Integer> prod79 = Arrays.asList();

@@ -74,29 +74,31 @@ public class SintacticAnalizer {
             }
 
             int currentElement = productions.peek();
-            // System.out.println("Tope de la pila:    " + currentElement);
-            // System.out.println("Elemento del Lexico:    " + lexemas.get(i));
+             System.out.println("Tope de la pila:    " + currentElement);
+             System.out.println("Elemento del Lexico:    " + lexemas.get(i));
             if (currentElement == lexemas.get(i)) {  // comparacion con el resultado de lexico
                 productions.pop();
                 i++;
-                //   System.out.println("_______________________________________________________________________________________");
+                   System.out.println("_______________________________________________________________________________________");
                 continue;
             } else {
                 if (currentElement < 100) {
-                    //    System.out.println("Procesando a un no terminal");
+                        System.out.println("Procesando a un no terminal");
                     productions.pop();
                     status = isValidToken(lexemas.get(i), tokens.get(i), currentElement);
-                    //   System.out.println("_______________________________________________________________________________________");
+                       System.out.println("_______________________________________________________________________________________");
                     if (status) {
                         continue;
                     }
                 } else if (currentElement > 899) {
+                    System.out.println("Procesando a una accion semantica");
                     productions.pop();
                     if (!runSemanticAction(currentElement, tokens.get(i - 1), lexemas.get(i - 1))) {
                         semanticStatus = false;
                         status = false;
                         break;
                     }
+                    System.out.println("_______________________________________________________________________________________");
                     continue;
                 } else {
                     status = false;
@@ -117,7 +119,7 @@ public class SintacticAnalizer {
             System.out.println("WARNING: Analisis Sintactico detenido.");
             System.out.println("************  ANALISIS SEMANTICO  **************");
             if (!semanticStatus) {
-                System.out.println("ERROR: " + semanticErrorMessage);
+                System.out.println(semanticErrorMessage);
             }
             if (!productions.empty()) {
                 System.out.println("ERROR: La pila de producciones no esta vacia.");
@@ -132,7 +134,7 @@ public class SintacticAnalizer {
     private void showStack() {
         int size = productions.size();
         for (int i = 0; i < size; i++) {
-            //    System.out.println("Elemento de la pila de producciones - " + productions.pop());
+                System.out.println("Elemento de la pila de producciones - " + productions.pop());
         }
     }
 
@@ -151,8 +153,8 @@ public class SintacticAnalizer {
     private boolean isValidToken(int lexema, String token, int row) {
         int column = sintacticBase.getColumnByToken(lexema, token);
         int prod = sintacticBase.gramar[row][column];
-        //   System.out.println("Columna en base a lexema: " + token);
-        //   System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
+           System.out.println("Columna en base a lexema: " + token);
+           System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
         if (prod == 600) {
             return false;
         }

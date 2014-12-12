@@ -13,15 +13,15 @@ declare H of int;
 
 declare I of int;
 declare J of int;
-declare K of int;
+
 declare M of int;
 
 declare N of int;
 declare O of int;
 declare P of int;
-declare Q of int; 
+declare Q of char; 
 
-declare R of int;
+declare R of char;
 declare S of int;
 declare T of int;
 declare U of int;
@@ -30,8 +30,6 @@ declare V of int;
 declare W of int;
 declare X of int;
 declare Y of int;
-
-#COMENTARIO
  
 A=10;
 
@@ -43,7 +41,7 @@ E=3;
 F=5;
 
 I=7;
-J=3;
+
 
 N=8;
 O=8;
