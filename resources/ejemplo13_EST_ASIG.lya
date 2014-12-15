@@ -1,52 +1,56 @@
 class ( ejemplo13_EST_ASIG )
 
-A= B;
+#DECLARACIONES
+declare A of int;
+declare B of float;
+declare C of char;
+declare D of string;
+declare E of int;
+declare F of float;
+declare G of char;
+declare H of string;
+declare sumAE of int;
+declare sumBF of float;
+declare sumCG of char;
+declare sumDH of string;
 
-B=! 10;
+#ESTATUTOS
+A= 10;
+B= 10.2;
+C= 'a';
+D= "hola";
+E= 4;
+F= 1.2;
+G= 'b';
+H= "adios";
+sumAE=A+E + (A/A+(E *A) - ((9 % E)+15));
+sumBF=B+F;
+sumCG=C+G;
+sumDH=D+H;
 
-C=! 10.2;
+if(A < E)
+ A = 3;
+ if(D != H)
+	H = D;
+ endif;
+else
+ if((D != H) || (B>F))
+	F = 36.2;
+ endif;
+ E = 20;
+endif;
 
-D=! 5.80e10;
+while(A < E)
+ G = 'h';
+endwhile;
 
-E=! 'a';
+do
+A = 100;
+dowhile(D != H)
+enddo;
 
-F=! "hola";
+read(A,C,F);
 
-
-
-#COMENTARIO
-
-
-G=! (H);
-
-I=! (!J);
-
-K=!(!10);
-
-L=!(!10.20);
-
-M=!(!2.3e10);
-
-N=!(!'a');
-
-O=!(!"hola");
-
-
-P[ X ] = AA;
-
-Q[ !Y ] =AB;
-
-R[ !10 ] = AC;
-
-T[ !10.2 ] =AD;
-
-XA[!8.3e10] = AF;
-
-XB[ ! 'a' ] = AG;
-
-XC[ ! "hola" ] = AH;
-
-XD[ ! (XF) ] = AI;
-
+write("Hola" + "mundo", sumCG);
 
 endclass

@@ -52,12 +52,35 @@ public class SemanticAnalizer {
             return true;
         return false;
     }
+    
+    public boolean isEmptyTemporalStack(){
+        if(temporal.empty())
+            return true;
+        return false;
+    }
 
-    public void showSymbolTable() {
-        System.out.println("************  ANALISIS SEMANTICO  **************");
+    public String showSymbolTable() {
+        String data = "";
+        System.out.println("--- TABLA DE SIMBOLOS ---");
         for (Map.Entry<String, Symols> entry : semanticSymbolTable.entrySet()) {
 //            System.out.printf("Key : %s and Variable: %s and Type: %s and Value: %s %n", entry.getKey(), entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
-            System.out.printf("Variable: %s and Type: %s and Value: %s %n", entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
+            System.out.printf("Variable: %s | Type: %s | Value: %s %n", entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
+            data += entry.getValue().getName() + " | " + entry.getValue().getType() + " | " + entry.getValue().getValue() + "\n";
         }
+        data += "\n\n";
+        return data;
+    }
+    
+    public String showCuadruplos() {
+        String data = "";
+        System.out.println("---  CUADRUPLOS  ---");
+        int i = 0;
+        for (Cuadruplos cuadruplo : cuadruplos) {
+            System.out.printf("%d Operador: %s  Operando1: %s  Operando2: %s  Resultado: %s  Apuntador: %d %n", i, cuadruplo.getOperador(), cuadruplo.getOperando1(), cuadruplo.getOperando2(), cuadruplo.getResultado(), cuadruplo.getSalto());
+            i++;
+            data += i + " | " + cuadruplo.getOperador() + " | " + cuadruplo.getOperando1() + " | " + cuadruplo.getOperando2() + " | " + cuadruplo.getResultado() + " | " + cuadruplo.getSalto() + "\n";
+        }
+        data += "\n\n";
+        return data;
     }
 }

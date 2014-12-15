@@ -1,0 +1,71 @@
+Class Name: ejemplo13_EST_ASIG.lya
+
+D | string | "hola"
+E | int | 20
+F | float | 36.2
+G | char | 'h'
+A | int | 100
+B | float | 10.2
+C | char | 'a'
+sumAE | int | 39
+T1 | int | 40
+H | string | D
+T0 | int | 25
+sumBF | float | 11.4
+sumDH | string | "holaadios"
+T3 | int | 1
+T2 | int | 16
+sumCG | char | 'ab'
+T4 | boolean | true
+T5 | boolean | false
+
+
+1 | = | 10 | null | A | 0
+2 | = | 10.2 | null | B | 0
+3 | = | 'a' | null | C | 0
+4 | = | "hola" | null | D | 0
+5 | = | 4 | null | E | 0
+6 | = | 1.2 | null | F | 0
+7 | = | 'b' | null | G | 0
+8 | = | "adios" | null | H | 0
+9 | + | E | A | 14 | 0
+10 | / | A | A | 1 | 0
+11 | * | A | E | 40 | 0
+12 | + | T1 | 1 | 41 | 0
+13 | % | E | 9 | 1 | 0
+14 | + | 15 | T3 | 16 | 0
+15 | - | T2 | 41 | 25 | 0
+16 | + | T0 | 14 | 39 | 0
+17 | = | 39 | null | sumAE | 0
+18 | + | F | B | 11.4 | 0
+19 | = | 11.4 | null | sumBF | 0
+20 | + | G | C | 'ab' | 0
+21 | = | 'ab' | null | sumCG | 0
+22 | + | H | D | "holaadios" | 0
+23 | = | "holaadios" | null | sumDH | 0
+24 | < | E | A | true | 0
+25 | = | 3 | null | A | 0
+26 | != | H | D | true | 0
+27 | = | D | null | H | 0
+28 | GOTO | null | null | null | 32
+29 | != | H | D | true | 0
+30 | > | F | B | false | 0
+31 | || | T5 | T4 | true | 0
+32 | = | 36.2 | null | F | 0
+33 | = | 20 | null | E | 0
+34 | < | E | A | false | 0
+35 | GOTOF | false | null | null | 37
+36 | = | 'h' | null | G | 0
+37 | GOTO | null | null | null | 33
+38 | = | 100 | null | A | 0
+39 | != | H | D | true | 0
+40 | GOTO | true | null | null | 37
+41 | GOTOF | null | null | null | 41
+42 | READ | A | null | null | 0
+43 | READ | C | null | null | 0
+44 | READ | F | null | null | 0
+45 | + | "mundo" | "Hola" | "Holamundo" | 0
+46 | WRITE | "Holamundo" | null | null | 0
+47 | WRITE | 'ab' | null | null | 0
+
+

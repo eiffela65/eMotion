@@ -11,6 +11,11 @@ import java.util.Stack;
 import com.emotion.semantic.SemanticAnalizer;
 import com.emotion.sintactico.Base;
 import com.emotion.semantic.Symols;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,6 +34,7 @@ public class SintacticAnalizer {
     private SemanticAnalizer sematicAalizer = new SemanticAnalizer();
     private Stack<String> variables = new Stack<String>();
     private String semanticErrorMessage;
+    private int tempIndex = 0;
 
     public SintacticAnalizer() {
         setLexemas(lexemas);
@@ -74,19 +80,19 @@ public class SintacticAnalizer {
             }
 
             int currentElement = productions.peek();
-             System.out.println("Tope de la pila:    " + currentElement);
-             System.out.println("Elemento del Lexico:    " + lexemas.get(i));
+            System.out.println("Tope de la pila:    " + currentElement);
+            System.out.println("Elemento del Lexico:    " + lexemas.get(i));
             if (currentElement == lexemas.get(i)) {  // comparacion con el resultado de lexico
                 productions.pop();
                 i++;
-                   System.out.println("_______________________________________________________________________________________");
+                System.out.println("_______________________________________________________________________________________");
                 continue;
             } else {
                 if (currentElement < 100) {
-                        System.out.println("Procesando a un no terminal");
+                    System.out.println("Procesando a un no terminal");
                     productions.pop();
                     status = isValidToken(lexemas.get(i), tokens.get(i), currentElement);
-                       System.out.println("_______________________________________________________________________________________");
+                    System.out.println("_______________________________________________________________________________________");
                     if (status) {
                         continue;
                     }
@@ -115,26 +121,33 @@ public class SintacticAnalizer {
 
         if (status) {
             System.out.println("INFO: Analisis Sintactico completo sin errores");
+            System.out.println("************  ANALISIS SEMANTICO  **************");
+//            sematicAalizer.showSymbolTable();
+//            sematicAalizer.showCuadruplos();
+            generateFile();
         } else {
             System.out.println("WARNING: Analisis Sintactico detenido.");
             System.out.println("************  ANALISIS SEMANTICO  **************");
             if (!semanticStatus) {
                 System.out.println(semanticErrorMessage);
+                showStack(sematicAalizer.operandos, "OPERANDOS");
+                showStack(sematicAalizer.tipos, "TIPOS");
+                showStack(sematicAalizer.operadores, "OPERADORES");
             }
             if (!productions.empty()) {
                 System.out.println("ERROR: La pila de producciones no esta vacia.");
                 status = false;
-                showStack();
+                showStack(productions, "PRODUCCIONES");
             }
         }
-        sematicAalizer.showSymbolTable();
         return status;
     }
 
-    private void showStack() {
-        int size = productions.size();
+    private void showStack(Stack pila, String name) {
+        System.out.println("$$$$$$$$$$$$$$$$$$$ Mostrando la pila de " + name + " $$$$$$$$$$$$$$$$$$$");
+        int size = pila.size();
         for (int i = 0; i < size; i++) {
-                System.out.println("Elemento de la pila de producciones - " + productions.pop());
+            System.out.println("Elemento de la pila de producciones - " + pila.get(i));
         }
     }
 
@@ -153,8 +166,8 @@ public class SintacticAnalizer {
     private boolean isValidToken(int lexema, String token, int row) {
         int column = sintacticBase.getColumnByToken(lexema, token);
         int prod = sintacticBase.gramar[row][column];
-           System.out.println("Columna en base a lexema: " + token);
-           System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
+        System.out.println("Columna en base a lexema: " + token);
+        System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
         if (prod == 600) {
             return false;
         }
@@ -176,13 +189,16 @@ public class SintacticAnalizer {
     }
 
     private boolean runSemanticAction(int semanticAction, String value, int lexema) {
-        //  System.out.println("Accion: " + semanticAction + "  Valor a analizar: " + value + "  fileName " + fileName);
+        System.out.println("Accion: " + semanticAction + "  Valor a analizar: " + value + "  fileName " + fileName);
         boolean status = true;
         String operador = "";
         String variable = "";
         String tipoVariable = "";
         Symols symbol = new Symols();
         Cuadruplos cuadruplo = new Cuadruplos();
+        String temVar = "";
+        int retorno = 0;
+        int falso = 0;
         switch (semanticAction) {
             case 900:  //Nombre de la clase
                 if (!fileName.equals(value + ".lya")) {
@@ -244,22 +260,39 @@ public class SintacticAnalizer {
                 sematicAalizer.tipos.push("string");
                 break;
             case 908:// Se agrega ( dentro de una expresion
+                temVar = "T" + tempIndex;
+                symbol.setName(temVar);
+                sematicAalizer.temporal.push(temVar);
+                sematicAalizer.operandos.push(temVar);
                 sematicAalizer.operandos.push(value);
+                sematicAalizer.semanticSymbolTable.put(temVar, symbol);  //se agrega la variable a la tabla de simbolos
+                tempIndex++;
+                sematicAalizer.operadores.push("temp");
                 break;
-            case 909:// Se ejecuta la notacion polaca para vaciar la pila de operandos y tipos hasta llegar con un 
-                while (!sematicAalizer.operadores.peek().equals(")")) {
+            case 909:// Se ejecuta la notacion polaca para vaciar la pila de operandos y tipos hasta llegar con un (
+                if (sematicAalizer.operadores.peek().equals("=")) {
+                    break;
+                }
+
+                while (!sematicAalizer.operandos.peek().equals("(")) {
+                    showStack(sematicAalizer.operandos, "OPERANDOS");
+                    showStack(sematicAalizer.operadores, "OPERADORES");
                     status = buildCuadruplosByNotacionPolaca();
+                    System.out.println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°");
                     if (!status) {
                         break;
                     }
                 }
+                sematicAalizer.operandos.pop();
                 break;
-            case 910:
+            case 910: //Si encontramos operador *,/,% en el tope de la pila, generar cuadruplo
+                showStack(sematicAalizer.operadores, "OPERADORES");
                 if (sematicAalizer.isEmptyOperadoresStack()) {
-                    status = false;
-                    semanticErrorMessage = "ERROR: La pila de operadores esta vacia.";
+                    status = true;
+                    break;
                 }
                 operador = sematicAalizer.operadores.peek();
+                System.out.println(operador);
                 switch (operador) {
                     case "*":
                         status = buildCuadruplosByNotacionPolaca();
@@ -271,23 +304,22 @@ public class SintacticAnalizer {
                         status = buildCuadruplosByNotacionPolaca();
                         break;
                     default:
-                        status = false;
-                        semanticErrorMessage = "ERROR: Operador no permitido. Se esperaba *, /, % obteniendo " + operador;
+                        status = true;
                 }
                 break;
-            case 911: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 911: //Agregamos * a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 912: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 912: //Agregamos / a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 913: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 913: //Agregamos % a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 914:
+            case 914: //Si encontramos operador +,- en el tope de la pila, generar cuadruplo
                 if (sematicAalizer.isEmptyOperadoresStack()) {
-                    status = false;
-                    semanticErrorMessage = "ERROR: La pila de operadores esta vacia.";
+                    status = true;
+                    break;
                 }
                 operador = sematicAalizer.operadores.peek();
                 switch (operador) {
@@ -298,41 +330,62 @@ public class SintacticAnalizer {
                         status = buildCuadruplosByNotacionPolaca();
                         break;
                     default:
-                        status = false;
-                        semanticErrorMessage = "ERROR: Operador no permitido. Se esperaba +, - obteniendo " + operador;
+                        status = true;
                 }
                 break;
-            case 915: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 915: //Agregamos + a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 916: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 916: //Agregamos - a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 917: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 917: //Agregamos operadores relacionales a pila de operadores
                 sematicAalizer.operadores.push(value);
+                showStack(sematicAalizer.operadores, "OPERADORES");
                 break;
-            case 918: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 918: //Generamos cuadruplo usando operadores relacionales
                 status = buildCuadruplosByNotacionPolaca();
                 break;
-            case 919: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 919: //Agregamos ! a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 920: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
-                status = buildCuadruplosByNotacionPolaca();
+            case 920: //Generamos cuadruplo de Negacion
+                if (sematicAalizer.isEmptyOperadoresStack()) {
+                    status = true;
+                    break;
+                }
+                operador = sematicAalizer.operadores.peek();
+                if (operador.equals("!")) {
+                    status = buildCuadruplosByNotacionPolaca();
+                }
                 break;
-            case 921: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
-                status = buildCuadruplosByNotacionPolaca();
+            case 921: //Generamos cuadruplo con operador logico &&
+                if (sematicAalizer.isEmptyOperadoresStack()) {
+                    status = true;
+                    break;
+                }
+                operador = sematicAalizer.operadores.peek();
+                if (operador.equals("&&")) {
+                    status = buildCuadruplosByNotacionPolaca();
+                }
                 break;
-            case 922: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 922: //Agregamos && a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 923: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
-                status = buildCuadruplosByNotacionPolaca();
+            case 923: //Generamos cuadruplo con operador logico ||
+                if (sematicAalizer.isEmptyOperadoresStack()) {
+                    status = true;
+                    break;
+                }
+                operador = sematicAalizer.operadores.peek();
+                if (operador.equals("||")) {
+                    status = buildCuadruplosByNotacionPolaca();
+                }
                 break;
-            case 924: //optimizacion al usar una accion para meter operadores en la pila englobando todos enn una
+            case 924: //Agregamos || a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 925: // Estatuto de asignacion. Valida si variable existe, Meter en pila de operandos y pila de tipos
+            case 925: //Agregamos identificador a pila de operandos
                 status = sematicAalizer.isVariable(value);
                 semanticErrorMessage = "ERROR: La variable no existe.";
                 if (status) {
@@ -340,10 +393,10 @@ public class SintacticAnalizer {
                     sematicAalizer.tipos.push(sematicAalizer.semanticSymbolTable.get(value).getType());
                 }
                 break;
-            case 926: // Estatuto de asignacion.  Meter en pila de operadores =
+            case 926: //Agregamos = a pila de operadores
                 sematicAalizer.operadores.push(value);
                 break;
-            case 927: // Estatuto de asignacion. Validamos pila de operandos no este vacia. Validamos tipos. Generamos cuadruplo
+            case 927: //Generamos cuadruplo de asignacion
                 if (sematicAalizer.isEmptyOperadoresStack() || sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
                     semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
                     status = false;
@@ -358,24 +411,27 @@ public class SintacticAnalizer {
                         status = false;
                         break;
                     }
-                    String resultado = sematicAalizer.operandos.pop();
                     String resultadoTipo = sematicAalizer.tipos.pop();
+                    String resultado = sematicAalizer.operandos.pop();
+
                     if (tipoVariable.equals(resultadoTipo)) {
                         cuadruplo = new Cuadruplos();
                         cuadruplo.setOperador(operador);
                         cuadruplo.setOperando1(variable);
                         cuadruplo.setResultado(resultado);
                         sematicAalizer.cuadruplos.add(cuadruplo);
+                        symbol = sematicAalizer.semanticSymbolTable.get(resultado);
+                        symbol.setValue(variable);
+                        sematicAalizer.semanticSymbolTable.put(resultado, symbol);
                     } else {
                         status = false;
                         semanticErrorMessage = "ERROR: Incompatibilidad de tipos.";
                     }
-
                 }
                 break;
             case 928: // Estatuto IF 
-                if (sematicAalizer.isEmptySaltosStack()) {
-                    semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
+                if (sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
+                    semanticErrorMessage = "ERROR: Pila de Operandos vacia.";
                     status = false;
                     break;
                 }
@@ -383,58 +439,179 @@ public class SintacticAnalizer {
                 tipoVariable = sematicAalizer.tipos.pop();
                 if (tipoVariable.equals("boolean")) {
                     cuadruplo = new Cuadruplos();
-                    if (variable.equals("FALSE")) {
-                        sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
+                    if (variable.equals("false")) {
+                        sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size()); //cuadruplo pendiente a ser llenado (apuntador)
                         cuadruplo.setOperador("GOTOF");
                         sematicAalizer.cuadruplos.add(cuadruplo);
                     }
                 } else {
-                    semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto IF.";
+                    semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto IF, requerido Boolean.";
                     status = false;
                 }
                 break;
             case 929: // Estatuto ELSE, crea el cuadruplo
                 if (sematicAalizer.isEmptySaltosStack()) {
-                    semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
-                    status = false;
-                    break;
+                    int salto = sematicAalizer.cuadruplos.size();
+                    sematicAalizer.saltos.push(salto);
+                    cuadruplo = new Cuadruplos();
+                    cuadruplo.setOperador("GOTO");
+                    sematicAalizer.cuadruplos.add(cuadruplo);
+                } else {
+                    //agregar la logica cuando sea un true en el if para q ignorre el else y haya saltos en la pila
+                    int remainCuadruplo = sematicAalizer.saltos.pop();
+                    int salto = sematicAalizer.cuadruplos.size();
+                    cuadruplo = sematicAalizer.cuadruplos.get(remainCuadruplo);
+                    cuadruplo.setSalto(salto);
+                    sematicAalizer.cuadruplos.set(remainCuadruplo, cuadruplo);
                 }
-                sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
-                cuadruplo = new Cuadruplos();
-                cuadruplo.setOperador("GOTOF");
-                sematicAalizer.cuadruplos.add(cuadruplo);
                 break;
             case 930: // Estatuto ENDIF, crea el cuadruplo
                 if (sematicAalizer.isEmptySaltosStack()) {
-                    semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
-                    status = false;
+                    status = true;
                     break;
                 }
                 int saltoPendiente = sematicAalizer.saltos.pop();
                 cuadruplo = sematicAalizer.cuadruplos.get(saltoPendiente);
-                cuadruplo.setSalto(sematicAalizer.cuadruplos.size());
-                sematicAalizer.cuadruplos.set(saltoPendiente, cuadruplo);
+                if (cuadruplo.getOperador().equals("GOTOF")) {
+                    cuadruplo.setSalto(sematicAalizer.cuadruplos.size());
+                    sematicAalizer.cuadruplos.set(saltoPendiente, cuadruplo);
+                }
+                if (cuadruplo.getOperador().equals("GOTO")) {
+                    cuadruplo.setSalto(sematicAalizer.cuadruplos.size());
+                    sematicAalizer.cuadruplos.set(saltoPendiente, cuadruplo);
+                }
                 break;
             case 931: // Estatuto WHILE, crea el cuadruplo
-                sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
+                System.out.println("Despues de la expresion");
+                if (sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
+                    semanticErrorMessage = "ERROR: Pila de Operandos vacia.";
+                    status = false;
+                    break;
+                }
+                showStack(sematicAalizer.saltos, "SALTOS despues de expresion");
+                variable = sematicAalizer.operandos.pop();
+                tipoVariable = sematicAalizer.tipos.pop();
+                if (tipoVariable.equals("boolean")) {
+                    cuadruplo = new Cuadruplos();
+                    sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size()); //cuadruplo pendiente a ser llenado (apuntador)
+                    if (variable.equals("false")) {
+                        cuadruplo.setOperador("GOTOF");
+                        cuadruplo.setOperando1(variable);
+                        sematicAalizer.cuadruplos.add(cuadruplo);
+                    }
+                } else {
+                    semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto WHILE, requerido Boolean.";
+                    status = false;
+                }
                 break;
             case 932: // Estatuto WHILE, crea el cuadruplo
+                System.out.println("Generando el cuadruplo ENDWHILE");
+                showStack(sematicAalizer.saltos, "SALTOS endwhile");
                 if (sematicAalizer.isEmptySaltosStack()) {
                     semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
                     status = false;
                     break;
                 }
+                falso = sematicAalizer.saltos.pop();
+                if (sematicAalizer.isEmptySaltosStack()) {
+                    semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
+                    status = false;
+                    break;
+                }
+                retorno = sematicAalizer.saltos.pop();
+                //Generar el goto de retorno
+                cuadruplo = new Cuadruplos();
+                cuadruplo.setOperador("GOTO");
+                cuadruplo.setSalto(retorno);
+                sematicAalizer.cuadruplos.add(cuadruplo);
+                //ellenar el got falso
+                cuadruplo = sematicAalizer.cuadruplos.get(falso);
+                if (cuadruplo.getOperador().equals("GOTOF")) {
+                    cuadruplo.setSalto(sematicAalizer.cuadruplos.size());
+                    sematicAalizer.cuadruplos.set(falso, cuadruplo);
+                }
+                break;
+            case 933: // Inicio del do-while metiendo retorno a saltos
+                System.out.println("Comenzando el ciclo do-while");
+                sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
+                break;
+            case 934: //Despues de analizar la expresion del do-while
+                System.out.println("Despues de la expresion");
+                if (sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
+                    semanticErrorMessage = "ERROR: Pila de Operandos vacia.";
+                    status = false;
+                    break;
+                }
+                showStack(sematicAalizer.saltos, "SALTOS despues de expresion");
                 variable = sematicAalizer.operandos.pop();
                 tipoVariable = sematicAalizer.tipos.pop();
                 if (tipoVariable.equals("boolean")) {
                     cuadruplo = new Cuadruplos();
-                    if (variable.equals("FALSE")) {
-                        cuadruplo.setOperador("GOTOF");
+//                    sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size()); //cuadruplo pendiente a ser llenado (apuntador)
+                    if (variable.equals("true")) {
+                        retorno = sematicAalizer.saltos.pop();
+                        cuadruplo.setOperador("GOTO");
+                        cuadruplo.setOperando1(variable);
+                        cuadruplo.setSalto(retorno);
                         sematicAalizer.cuadruplos.add(cuadruplo);
                     }
                 } else {
-                    semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto IF.";
+                    semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto DO-WHILE, requerido Boolean.";
                     status = false;
+                }
+                break;
+            case 935: // Estatuto DO-WHILE, crea el cuadruplo
+                System.out.println("Generando el cuadruplo ENDDO");
+                sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size()); //cuadruplo pendiente a ser llenado (apuntador)                   
+                showStack(sematicAalizer.saltos, "SALTOS enddo");
+                if (sematicAalizer.isEmptySaltosStack()) {
+                    semanticErrorMessage = "ERROR: Pila de saltos vacia, no se puede continuar con el analisis.";
+                    status = false;
+                    break;
+                }
+                falso = sematicAalizer.saltos.pop();
+
+                //Generar el goto de retorno
+                cuadruplo = new Cuadruplos();
+                cuadruplo.setOperador("GOTOF");
+                cuadruplo.setSalto(falso + 1);
+                sematicAalizer.cuadruplos.add(cuadruplo);
+                //ellenar el got falso
+
+                break;
+            case 936:
+                if (!sematicAalizer.isVariable(value)) {
+                    status = false;
+                    semanticErrorMessage = "ERROR: La Variable " + value + " no existe o no ha sido declarada.";
+                    break;
+                }
+                variables.add(value);
+                break;
+            case 937:
+                for (String expresion : variables) {
+                    cuadruplo = new Cuadruplos();
+                    cuadruplo.setOperador("READ");
+                    cuadruplo.setOperando1(expresion);
+                    sematicAalizer.cuadruplos.add(cuadruplo);
+                }
+                break;
+            case 938:
+                System.out.println("Comenzando el ciclo while");
+                sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
+                break;
+            case 939:
+                int size = sematicAalizer.operandos.size();
+                for (int i = 0; i < size; i++) {
+                    cuadruplo = new Cuadruplos();
+                    cuadruplo.setOperador("WRITE");
+                    String expresion = sematicAalizer.operandos.pop();
+                    if (sematicAalizer.isVariable(expresion)) {
+                        String valor = sematicAalizer.semanticSymbolTable.get(expresion).getValue();
+                        cuadruplo.setOperando1(valor);
+                    } else {
+                        cuadruplo.setOperando1(expresion);
+                    }
+                    sematicAalizer.cuadruplos.add(cuadruplo);
                 }
                 break;
             default:
@@ -444,33 +621,67 @@ public class SintacticAnalizer {
     }
 
     private boolean buildCuadruplosByNotacionPolaca() {
+        Symols symbol = new Symols();
+        System.out.println("***********************    Se construira un cuadruplo");
         String[] triplo = new String[2];
         if (sematicAalizer.isEmptyOperadoresStack() || sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
             semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
             return false;
+        }
+        if (sematicAalizer.operadores.peek().equals("temp")) {
+            String valueTemp = sematicAalizer.operandos.pop();
+            String temVar = sematicAalizer.temporal.pop();
+            String typeTemp = sematicAalizer.tipos.peek();
+            sematicAalizer.operadores.pop();
+            symbol = sematicAalizer.semanticSymbolTable.get(temVar);
+            if (sematicAalizer.isVariable(valueTemp)) {
+                valueTemp = sematicAalizer.semanticSymbolTable.get(valueTemp).getValue();
+            }
+            symbol.setValue(valueTemp);
+            symbol.setType(typeTemp);
+            System.out.println("888888888888888888888888   " + temVar);
+            System.out.println("888888888888888888888888   " + typeTemp);
+            System.out.println("888888888888888888888888   " + valueTemp);
+            sematicAalizer.semanticSymbolTable.put(temVar, symbol);
+
+            return true;
         }
         String operando1 = sematicAalizer.operandos.pop();
         String operador = sematicAalizer.operadores.pop();
         String tipoOperador1 = sematicAalizer.tipos.pop();
 
         // Solo cuando es la negacion
-        if (operador.equals("!")) {
-            triplo = setNegation(operando1, tipoOperador1);
-            if (triplo == null) {
-                semanticErrorMessage = "ERROR: La operacion '" + operador + "' no puede realizar con el operando: '" + operando1 + "' por ser de tipo '" + tipoOperador1 + "'";
-                return false;
-            }
-            return true;
-        }
-
-        if (sematicAalizer.isEmptyOperandosStack()|| sematicAalizer.isEmptyTiposStack()) {
+//        if (operador.equals("!")) {
+//            triplo = setNegation(operando1, tipoOperador1);
+//            if (triplo == null) {
+//                semanticErrorMessage = "ERROR: La operacion '" + operador + "' no puede realizar con el operando: '" + operando1 + "' por ser de tipo '" + tipoOperador1 + "'";
+//                return false;
+//            }
+//            return true;
+//        }
+        if (sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
             semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
             return false;
         }
+
+        if (sematicAalizer.operandos.peek().equals("(")) {
+            sematicAalizer.operandos.pop();
+        }
+
+        if (sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
+            semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
+            return false;
+        }
+
+        System.out.println("OP1 -> " + operando1);
+        System.out.println("OPR -> " + operador);
+
         String operando2 = sematicAalizer.operandos.pop();
         String tipoOperador2 = sematicAalizer.tipos.pop();
+        System.out.println("OP2 -> " + operando2);
+        System.out.println("TipoOP2 -> " + operando2);
         if (!isValidTypes(tipoOperador1, tipoOperador2)) {
-            semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
+            semanticErrorMessage = "ERROR: Los tipos son incompatibles.";
             return false;
         }
         triplo = validateOperandosAndOperator(operando1, operando2, operador, tipoOperador1);
@@ -483,9 +694,11 @@ public class SintacticAnalizer {
         cuadruplo.setOperando1(operando1);
         cuadruplo.setOperando2(operando2);
         cuadruplo.setResultado(triplo[0]);
+        System.out.printf("%s | %s | %s | %s %n", operador, operando1, operando2, triplo[0]);
         sematicAalizer.cuadruplos.add(cuadruplo);
         sematicAalizer.operandos.push(triplo[0]);
         sematicAalizer.tipos.push(triplo[1]);
+        showStack(sematicAalizer.operandos, "OPERANDOS");
         return true;
     }
 
@@ -511,29 +724,82 @@ public class SintacticAnalizer {
         return null;
     }
 
+    private int convertStringToInt(String operando) {
+        int op = 0;
+        if (sematicAalizer.isVariable(operando)) {
+            op = Integer.parseInt(sematicAalizer.semanticSymbolTable.get(operando).getValue());
+        } else {
+            op = Integer.parseInt(operando);
+        }
+        return op;
+    }
+
+    private float convertStringToFloat(String operando) {
+        float op = 0;
+        if (sematicAalizer.isVariable(operando)) {
+            op = Float.parseFloat(sematicAalizer.semanticSymbolTable.get(operando).getValue());
+        } else {
+            op = Float.parseFloat(operando);
+        }
+        return op;
+    }
+
+    private String getStringValue(String operando) {
+        String op = "";
+        if (sematicAalizer.isVariable(operando)) {
+            op = sematicAalizer.semanticSymbolTable.get(operando).getValue();
+        } else {
+            op = operando;
+        }
+        return op;
+    }
+
+    private Boolean getBooleanValue(String operando) {
+        boolean op = false;
+        if (sematicAalizer.isVariable(operando)) {
+            op = Boolean.parseBoolean(sematicAalizer.semanticSymbolTable.get(operando).getValue());
+        } else {
+            op = Boolean.parseBoolean(operando);
+        }
+        return op;
+    }
+
     private String[] validateOperandosAndOperator(String operando1, String operando2, String operador, String tipo) {
+        System.out.printf("Elementos a evaluar: OP1 = %s OP2 = %s OPR = %s TYPE = %s %n", operando2, operando1, operador, tipo);
         String[] triplo = new String[2];
+        String ops1 = "";
+        String ops2 = "";
+        int op1 = 0;
+        int op2 = 0;
+        float opf1 = 0;
+        float opf2 = 0;
+        boolean opb1 = false;
+        boolean opb2 = false;
         switch (operador) {
             case "+":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = Integer.toString(op1 + op2);
                         triplo[1] = tipo;
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = Float.toString(opf1 + opf2);
                         triplo[1] = tipo;
                         break;
                     case "char":
-                        triplo[0] = operando1 + operando2;
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = "'" + ops1.replace("'", "") + ops2.replace("'", "") + "'";
                         triplo[1] = tipo;
                         break;
                     case "string":
-                        triplo[0] = operando1 + operando2;
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = "\"" + ops1.replace("\"", "") + ops2.replace("\"", "") + "\"";
                         triplo[1] = tipo;
                         break;
                     default:
@@ -543,14 +809,14 @@ public class SintacticAnalizer {
             case "-":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = Integer.toString(op1 - op2);
                         triplo[1] = tipo;
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = Float.toString(opf1 - opf2);
                         triplo[1] = tipo;
                         break;
@@ -561,14 +827,14 @@ public class SintacticAnalizer {
             case "*":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = Integer.toString(op1 * op2);
                         triplo[1] = tipo;
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = Float.toString(opf1 * opf2);
                         triplo[1] = tipo;
                         break;
@@ -579,14 +845,14 @@ public class SintacticAnalizer {
             case "/":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = Integer.toString(op1 / op2);
                         triplo[1] = tipo;
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = Float.toString(opf1 / opf2);
                         triplo[1] = tipo;
                         break;
@@ -597,14 +863,14 @@ public class SintacticAnalizer {
             case "%":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = Integer.toString(op1 % op2);
                         triplo[1] = tipo;
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = Float.toString(opf1 % opf2);
                         triplo[1] = tipo;
                         break;
@@ -615,27 +881,31 @@ public class SintacticAnalizer {
             case "==":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = (op1 == op2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = (opf1 == opf2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "char":
-                        triplo[0] = (operando1.equals(operando2)) ? "true" : "false";
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "string":
-                        triplo[0] = (operando1.equals(operando2)) ? "true" : "false";
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "boolean":
-                        triplo[0] = (operando1.equals(operando2)) ? "true" : "false";
+                        triplo[0] = (operando2.equals(operando1)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -645,27 +915,31 @@ public class SintacticAnalizer {
             case "!=":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
                         triplo[0] = (op1 != op2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
                         triplo[0] = (opf1 != opf2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "char":
-                        triplo[0] = (!operando1.equals(operando2)) ? "true" : "false";
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "string":
-                        triplo[0] = (!operando1.equals(operando2)) ? "true" : "false";
+                        ops1 = getStringValue(operando2);
+                        ops2 = getStringValue(operando1);
+                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "boolean":
-                        triplo[0] = (!operando1.equals(operando2)) ? "true" : "false";
+                        triplo[0] = (!operando2.equals(operando1)) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -675,15 +949,15 @@ public class SintacticAnalizer {
             case "<":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
-                        triplo[0] = (op1 < op2) ? "true" : "false";
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
+                        triplo[0] = (op2 < op1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
-                        triplo[0] = (opf1 < opf2) ? "true" : "false";
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
+                        triplo[0] = (opf2 < opf1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -693,15 +967,15 @@ public class SintacticAnalizer {
             case "<=":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
-                        triplo[0] = (op1 <= op2) ? "true" : "false";
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
+                        triplo[0] = (op2 <= op1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
-                        triplo[0] = (opf1 <= opf2) ? "true" : "false";
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
+                        triplo[0] = (opf2 <= opf1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -711,15 +985,15 @@ public class SintacticAnalizer {
             case ">":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
-                        triplo[0] = (op1 > op2) ? "true" : "false";
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
+                        triplo[0] = (op2 > op1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
-                        triplo[0] = (opf1 > opf2) ? "true" : "false";
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
+                        triplo[0] = (opf2 > opf1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -729,15 +1003,15 @@ public class SintacticAnalizer {
             case ">=":
                 switch (tipo) {
                     case "int":
-                        int op1 = Integer.parseInt(operando1);
-                        int op2 = Integer.parseInt(operando2);
-                        triplo[0] = (op1 >= op2) ? "true" : "false";
+                        op1 = convertStringToInt(operando2);
+                        op2 = convertStringToInt(operando1);
+                        triplo[0] = (op2 >= op1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     case "float":
-                        float opf1 = Float.parseFloat(operando1);
-                        float opf2 = Float.parseFloat(operando2);
-                        triplo[0] = (opf1 >= opf2) ? "true" : "false";
+                        opf1 = convertStringToFloat(operando2);
+                        opf2 = convertStringToFloat(operando1);
+                        triplo[0] = (opf2 >= opf1) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -747,9 +1021,9 @@ public class SintacticAnalizer {
             case "&&":
                 switch (tipo) {
                     case "boolean":
-                        boolean op1 = Boolean.parseBoolean(operando1);
-                        boolean op2 = Boolean.parseBoolean(operando2);
-                        triplo[0] = (op1 && op2) ? "true" : "false";
+                        opb1 = getBooleanValue(operando2);
+                        opb2 = getBooleanValue(operando1);
+                        triplo[0] = (opb1 && opb2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -759,9 +1033,9 @@ public class SintacticAnalizer {
             case "||":
                 switch (tipo) {
                     case "boolean":
-                        boolean op1 = Boolean.parseBoolean(operando1);
-                        boolean op2 = Boolean.parseBoolean(operando2);
-                        triplo[0] = (op1 || op2) ? "true" : "false";
+                        opb1 = getBooleanValue(operando2);
+                        opb2 = getBooleanValue(operando1);
+                        triplo[0] = (opb1 || opb2) ? "true" : "false";
                         triplo[1] = "boolean";
                         break;
                     default:
@@ -769,7 +1043,42 @@ public class SintacticAnalizer {
                 }
                 break;
         }
-        return null;
+        return triplo;
     }
 
+    private void generateFile() {
+//        try {
+//            File file = new File("./resources/build/" + fileName + ".emn");
+//            file.delete();
+//            file.createNewFile();
+//
+//            String data = "Class Name: " + fileName + "\n\n";
+//            //true = append file
+//            FileWriter fileWritter = new FileWriter(file.getName(), true);
+//            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+//            bufferWritter.write(data);
+//            data = sematicAalizer.showSymbolTable();
+//            bufferWritter.write(data);
+//            data = sematicAalizer.showCuadruplos();
+//            bufferWritter.write(data);
+//
+//            bufferWritter.close();
+//
+//            System.out.println("Done");
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("./resources/build/" + fileName + ".emn", true)))) {
+            String data = "Class Name: " + fileName + "\n\n";
+            out.println(data);
+            data = sematicAalizer.showSymbolTable();
+            out.println(data);
+            data = sematicAalizer.showCuadruplos();
+            out.println(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
