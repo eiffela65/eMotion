@@ -1,0 +1,20 @@
+Class Name: ejemplo_write_sem.lya
+
+
+res | string | "El resultado de la expresion es: "
+A | int | 5
+B | int | 3
+resultado | int | 15
+
+
+
+1 | = | 5 | null | A | 0
+2 | = | 3 | null | B | 0
+3 | = | "El resultado de la expresion es: " | null | res | 0
+4 | * | B | A | 15 | 0
+5 | = | 15 | null | resultado | 0
+6 | WRITE | "El resultado de la expresion es: " | null | null | 0
+7 | WRITE | 15 | null | null | 0
+
+
+

@@ -1,0 +1,13 @@
+class (ejemplo_negacion)
+declare A of int;
+declare B of int;
+declare C of int;
+A=10;
+B=9;
+C=0;
+if (!(A == B))
+C=15;
+else
+C=10;
+endif;
+endclass

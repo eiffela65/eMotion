@@ -1,0 +1,15 @@
+class (ejemplo_write_sem)
+declare A of int;
+declare B of int;
+declare resultado of int;
+declare res of string;
+
+A= 5;
+B= 3;
+res="El resultado de la expresion es: ";
+
+resultado=A*B;
+
+write (res, resultado);
+
+endclass

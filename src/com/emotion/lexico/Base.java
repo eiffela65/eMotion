@@ -124,14 +124,14 @@ public class Base {
                     column = 7;
                     break;
                 default:
-                    column = 1000;
+                    column = 28;
                     break;
             }
         }
 //		System.out.println("[" + rowLexema + " - " + column + "] = " + getRow(rowLexema, column));
-        if (column == 1000) {
-            return 500;
-        }
+//        if (column == 1000) {
+//            return 500;
+//        }
         return getRow(rowLexema, column);
     }
 

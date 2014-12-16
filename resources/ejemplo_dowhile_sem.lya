@@ -1,0 +1,11 @@
+class (ejemplo_dowhile_sem)
+declare A of int;
+
+A=0;
+
+do
+A=(A+1);
+dowhile (A<5)
+enddo;
+
+endclass
