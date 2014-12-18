@@ -1,0 +1,25 @@
+Class Name: ejemplo_negacion.emn
+
+
+A | int | 10
+B | int | 9
+C | int | 10
+T1 | boolean | null
+T0 | boolean | T1
+T2 | boolean | null
+
+
+
+1 | = | 10 | null | A | 0
+2 | = | 9 | null | B | 0
+3 | = | 0 | null | C | 0
+4 | == | A | B | T1 | 0
+5 | = | T1 | null | T0 | 0
+6 | ! | T0 | null | T2 | 0
+7 | GOTOF | T2 | null | null | 9
+8 | = | 15 | null | C | 0
+9 | GOTO | null | null | null | 10
+10 | = | 10 | null | C | 0
+
+
+
