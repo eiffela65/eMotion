@@ -1,0 +1,42 @@
+class (ejemplo_if_completo)
+declare AA of int;
+declare resAA of int;
+declare AAA of int;
+declare resAAA of int;
+declare W of int;
+declare X of int;
+declare Y of int;
+declare Z of int;
+
+AA=3;
+resAA=0;
+AAA=5;
+resAAA=0;
+
+W=0;
+X=0;
+Y=0;
+Z=0;
+
+write("Introduzca un valor para W");
+read(W);
+write("Introduzca un valor para X");
+read(X);
+write("Introduzca un valor para Y");
+read(Y);
+write("Introduzca un valor para Z");
+read(Z);
+
+if (W>X)
+resAA=(AA*5);
+write(resAA);
+   if(Y<Z)
+   resAAA=(AAA*3);
+   write(resAAA);
+   endif;
+else
+resAA=(AA*2);
+write(resAA);
+endif;
+
+endclass

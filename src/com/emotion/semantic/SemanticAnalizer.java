@@ -65,7 +65,7 @@ public class SemanticAnalizer {
         for (Map.Entry<String, Symols> entry : semanticSymbolTable.entrySet()) {
 //            System.out.printf("Key : %s and Variable: %s and Type: %s and Value: %s %n", entry.getKey(), entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
             System.out.printf("Variable: %s | Type: %s | Value: %s %n", entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
-            data += entry.getValue().getName() + " | " + entry.getValue().getType() + " | " + entry.getValue().getValue() + "\n";
+            data += entry.getValue().getName() + " # " + entry.getValue().getType() + "\n";
         }
         data += "\n\n";
         return data;
@@ -76,9 +76,9 @@ public class SemanticAnalizer {
         System.out.println("---  CUADRUPLOS  ---");
         int i = 0;
         for (Cuadruplos cuadruplo : cuadruplos) {
-            System.out.printf("%d Operador: %s  Operando1: %s  Operando2: %s  Resultado: %s  Apuntador: %d %n", i, cuadruplo.getOperador(), cuadruplo.getOperando1(), cuadruplo.getOperando2(), cuadruplo.getResultado(), cuadruplo.getSalto());
+            System.out.printf("%d Operador: %s   Operando1: %s   Operando2: %s   Resultado: %s   Apuntador: %d %n", i, cuadruplo.getOperador(), cuadruplo.getOperando1(), cuadruplo.getOperando2(), cuadruplo.getResultado(), cuadruplo.getSalto());
             i++;
-            data += i + " | " + cuadruplo.getOperador() + " | " + cuadruplo.getOperando1() + " | " + cuadruplo.getOperando2() + " | " + cuadruplo.getResultado() + " | " + cuadruplo.getSalto() + "\n";
+            data += i + " # " + cuadruplo.getOperador() + " # " + cuadruplo.getOperando1() + " # " + cuadruplo.getOperando2() + " # " + cuadruplo.getResultado() + " # " + cuadruplo.getSalto() + "\n";
         }
         data += "\n\n";
         return data;

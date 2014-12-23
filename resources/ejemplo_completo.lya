@@ -1,0 +1,150 @@
+class (ejemplo_completo)
+declare AA of int;
+declare AB of int;
+declare AC of float;
+declare AD of float;
+
+declare AAA of int;
+declare ABA of int;
+declare ACA of float;
+declare ADA of float;
+
+declare resAA of int;
+declare resAB of int;
+declare resAC of float;
+declare resAD of float;
+
+declare resAAA of int;
+declare resABA of int;
+declare resACA of int;
+declare resADA of int;
+
+declare cont1 of int;
+declare AF of int;
+declare AG of int;
+
+declare cont2 of int;
+declare resXX of int;
+
+declare AAAA of int;
+declare AAAB of int;
+declare AAAC of int;
+declare resAAAA of int;
+
+declare AAAAD of int;
+declare resAAAAD of int;
+
+AA=3;
+AB=2;
+AC=4.1;
+AD=1.2;
+
+resAA=0;
+resAB=0;
+resAC=0.0;
+resAD=0.0;
+
+resAAA=0;
+resABA=0;
+resACA=0.0;
+resADA=0.0;
+
+cont1=0;
+AF=2;
+AG=7;
+
+cont2=0;
+resXX=0;
+
+AAAA=5;
+AAAB=3;
+AAAC=6;
+
+AAAAD=3;
+resAAAAD=0;
+
+read(W,X,Y,Z);
+
+if (W>X)
+resAA=AA*5;
+write(resAA);
+   if(Y<Z)
+   resAAA=AAA*3;
+   write(resAAA);
+   endinf;
+ else
+resAA=AA*2;
+write(resAA);
+endif;
+
+if (W<X)
+resAB=AB*5;
+write(resAB);
+   if(Y>Z)
+   resABA=ABA*3;
+   write(resABA);
+   endinf;
+ else
+resAB=AB*2;
+write(resAB);
+endif;
+
+
+if (W>=X)
+resAC=(AC*5.2);
+write(AC);
+   if(Y<=Z)
+   resACA=(ACA*3.2);
+   write(ACA);
+   endinf;
+ else
+resAC=(AC*2.2);
+write(AC);
+endif;
+
+if (W<=X)
+resAD=(AD*5.2);
+write(AD);
+   if(Y>=Z)
+   resAD=(ADA*3.2);
+   write(ADA);
+   endinf;
+ else
+resAD=(AD*2.2);
+write(AD);
+endif;
+
+
+while(AF < AG)
+write("Vuelta numero: ",cont1);
+cont1=cont1+1;
+AF=AF+1;
+endwhile;
+
+read(XX);
+while(AH < AI)
+if (AH<=XX)
+resXX=XX*5;
+write(resXX);
+else
+write("XX fue menor o igual que AH");
+endif;
+write("Vuelta numero: ",cont2);
+cont2=cont2+1;
+AF=AF+1;
+endwhile;
+
+do
+resAAAA = AAAA+1;
+write(resAAAA);
+dowhile(AAAB <= AAAC)
+enddo;
+
+read(YYY,ZZZ);
+do
+resAAAAD = AAAAD+1;
+write(resAAAAD);
+dowhile(YYY <= ZZZ)
+enddo;
+
+endclass

@@ -1,0 +1,21 @@
+class (ejemplo_factorial)
+declare A of int;
+declare B of int;
+declare res of int;
+
+read (A);
+
+B=0;
+res=0;
+
+while (B<=A)
+res=A*(A-1);
+B=B+1;
+endwhile;
+
+write (res);
+
+endclass
+
+
+

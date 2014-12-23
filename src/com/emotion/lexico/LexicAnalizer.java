@@ -16,7 +16,7 @@ public class LexicAnalizer {
 
     public void startAnalisis(File file) {
         try {
-            this.status = ReadFile.readFile(file);
+            ReadFile.readFile(file);
 
         } catch (FileException | LexicoException e) {
             setStatus(false);

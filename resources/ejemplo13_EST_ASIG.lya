@@ -42,11 +42,12 @@ endif;
 
 while(A < E)
  G = 'h';
+ A = 78;
 endwhile;
 
 do
-A = 100;
-dowhile(D != H)
+E = E - 1;
+dowhile(E > 0)
 enddo;
 
 read(A,C,F);

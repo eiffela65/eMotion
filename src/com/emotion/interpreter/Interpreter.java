@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  *
@@ -26,6 +27,8 @@ public class Interpreter {
 
     public Map<String, Symols> symbolTable = new HashMap<String, Symols>();
     public List<Cuadruplos> cuadruplos = new ArrayList<Cuadruplos>();
+    Scanner in = new Scanner(System.in);
+    int index = 0;
 
     void readFile(File file) throws FileException {
         BufferedReader br;
@@ -36,11 +39,9 @@ public class Interpreter {
             System.out.println("************  EXECUTING " + fileName + ".emn  **************");
             String arrayLine[];
             while (line != null) {
-                System.out.println(line);
-                arrayLine = line.split("\\|");
+                arrayLine = line.split("#");
                 if (arrayLine.length > 1) {
                     if (isInteger(arrayLine[0])) {
-
                         fillCuadruplos(arrayLine);
                     } else {
                         fillSymbolsTable(arrayLine);
@@ -49,36 +50,38 @@ public class Interpreter {
                 line = br.readLine();
             }
             br.close();
-            System.out.println("--------------------------------");
-            showSymbolTable();
-            System.out.println("················");
-            showCuadruplos();
         } catch (FileNotFoundException e) {
             throw new FileException("ERROR: No se encontró el archivo");
         } catch (IOException e) {
             throw new FileException("ERROR: No se puede leer el archivo. Puede estar corrupto");
         }
+
+        System.out.println("************  OUTPUT  **************");
+
+        runCuadruplos();
+        
+        System.out.println("************  BUILD SUCCESS  **************");
+        
+        System.exit(0);
     }
 
     private boolean isInteger(String s) {
         try {
-//        System.out.println(s);
             Integer.parseInt(s.trim());
         } catch (NumberFormatException e) {
-//        System.out.println("ERROR " + s);
             return false;
         }
         return true;
     }
 
     private void fillSymbolsTable(String[] arrayLine) {
-        if (arrayLine.length < 3) {
+        if (arrayLine.length < 2) {
             System.out.println("ERROR: No se pudo cargar en la tabla de simbolos");
         } else {
             Symols symbol = new Symols();
             symbol.setName(arrayLine[0].trim());
             symbol.setType(arrayLine[1].trim());
-            symbolTable.put(arrayLine[0], symbol);
+            symbolTable.put(arrayLine[0].trim(), symbol);
         }
     }
 
@@ -91,98 +94,143 @@ public class Interpreter {
             cuadruplo.setOperando1(arrayLine[2].trim());
             cuadruplo.setOperando2(arrayLine[3].trim());
             cuadruplo.setResultado(arrayLine[4].trim());
-            cuadruplo.setSalto(Integer.parseInt(arrayLine[5].trim()));
+            try {
+                cuadruplo.setSalto(Integer.parseInt(arrayLine[5].trim()));
+            } catch (NumberFormatException e) {
+                cuadruplo.setSalto(0);
+            }
             cuadruplos.add(cuadruplo);
+            index++;
         }
-    }
-
-    private String showSymbolTable() {
-        String data = "";
-        System.out.println("--- TABLA DE SIMBOLOS ---");
-        for (Map.Entry<String, Symols> entry : symbolTable.entrySet()) {
-//            System.out.printf("Key : %s and Variable: %s and Type: %s and Value: %s %n", entry.getKey(), entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
-            System.out.printf("Variable: %s | Type: %s | Value: %s %n", entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
-            data += entry.getValue().getName() + " | " + entry.getValue().getType() + " | " + entry.getValue().getValue() + "\n";
-        }
-        data += "\n\n";
-        return data;
-    }
-
-    private String showCuadruplos() {
-        String data = "";
-        System.out.println("---  CUADRUPLOS  ---");
-        int i = 0;
-        for (Cuadruplos cuadruplo : cuadruplos) {
-            System.out.printf("%d Operador: %s  Operando1: %s  Operando2: %s  Resultado: %s  Apuntador: %d %n", i, cuadruplo.getOperador(), cuadruplo.getOperando1(), cuadruplo.getOperando2(), cuadruplo.getResultado(), cuadruplo.getSalto());
-            i++;
-            data += i + " | " + cuadruplo.getOperador() + " | " + cuadruplo.getOperando1() + " | " + cuadruplo.getOperando2() + " | " + cuadruplo.getResultado() + " | " + cuadruplo.getSalto() + "\n";
-        }
-        data += "\n\n";
-        return data;
     }
 
     public void runCuadruplos() {
         int apt = 0;
         int size = cuadruplos.size();
+        String variable, variable2;
+        String tipo;
+        String value;
+        String resultado;
         Cuadruplos cuadruplo;
+        Symols symbol;
+        Symols symbolResultado;
         while (apt < size) {
             cuadruplo = cuadruplos.get(apt);
-            if (cuadruplo.getOperador().equals("GOTO") || cuadruplo.getOperador().equals("GOTOF")) {
-                apt = cuadruplo.getSalto() - 1;
-                //Hacer la comparacion con el resultado y lo que se tenga dentro del GOTOF
-            } else {
-                String resultado = makeOperation(cuadruplo.getOperador(), cuadruplo.getOperando1(), cuadruplo.getOperando2());
-                Symols symbol = symbolTable.get(cuadruplo.getResultado());
-                symbol.setValue(resultado);
-                symbolTable.put(cuadruplo.getResultado(), symbol);
+            String operador = cuadruplo.getOperador().trim();
+            variable = cuadruplo.getOperando1().trim();
+            variable2 = cuadruplo.getOperando2().trim();
+            resultado = cuadruplo.getResultado().trim();
+            switch (operador) {
+                case "GOTO":
+                    apt = cuadruplo.getSalto();
+                    break;
+                case "GOTOF":
+                    symbol = symbolTable.get(variable);
+                    if (symbol.getValue().equals("false")) {
+                        apt = cuadruplo.getSalto();
+                    } else {
+                        apt++;
+                    }
+                    break;
+                case "READ":
+                    symbol = symbolTable.get(variable);
+                    System.out.println("Estoy en el read para " + variable);
+                    tipo = symbol.getType();
+                    if (tipo.equals("int")) {
+                        value = Integer.toString(in.nextInt());
+                    } else if (tipo.equals("float")) {
+                        value = Float.toString(in.nextFloat());
+                    } else {
+                        value = in.next();
+                        if (symbol.getType().equals("char") && value.length() > 1) {
+                        }
+                    }
+                    symbol.setValue(value);
+                    symbolTable.put(variable, symbol);
+                    apt++;
+                    System.out.println("Fin del READ siguiente apt   " + apt);
+                    break;
+                case "WRITE":
+                    value = variable;
+                    if (isVariable(variable)) {
+                        symbol = symbolTable.get(variable);
+                        value = symbol.getValue();
+                    }
+                    System.out.println(value);
+                    apt++;
+                    break;
+                case "!":
+                    symbolResultado = symbolTable.get(resultado);
+                    symbol = symbolTable.get(variable);
+                    value = variable;
+                    if (isVariable(variable)) {
+                        symbol = symbolTable.get(variable);
+                        value = symbol.getValue();
+                    }
+                    value = setNegacion(value);
+                    symbolResultado.setValue(value);
+                    symbolTable.put(variable, symbolResultado);
+                    apt++;
+                    break;
+                case "=":
+                    symbolResultado = symbolTable.get(resultado);
+                    value = variable;
+                    if (isVariable(variable)) {
+                        symbol = symbolTable.get(variable);
+                        value = symbol.getValue();
+                    }
+                    symbolResultado.setValue(value);
+                    symbolTable.put(variable, symbolResultado);
+                    apt++;
+                    break;
+                default:
+                    symbolResultado = symbolTable.get(resultado);
+                    tipo = getTipo(variable, variable2);
+                    value = validateOperandosAndOperator(variable, variable2, operador, tipo);
+                    symbolResultado.setValue(value);
+                    symbolTable.put(resultado, symbolResultado);
+                    apt++;
             }
         }
-        System.out.println("************  FIN DE LA EJECUCION  **************");
     }
 
-    private String makeOperation(String operador, String operando1, String operando2) {
-        String resultado = "";
-        Symols symbol = symbolTable.get(operando1);
-        String tipo = symbol.getType();
-        if (operando2.equals("null")) {
-            if(operador.equals("WRITE"))
-                System.out.println(operando1);
-            else if(operador.equals("READ")){
-                //Colocar el buffer reader para la lectura por consola
-                //Hacer la conversion de acuerdo al tipo de la variable
-                    //Si hay error mostrar un error en tiempo de ejecucion
-            } else{
-                //Hacer la operacion (la unica disponible al parecer es la negacion)
-            }
-            System.out.printf("%s %s = %s %n", operando1, operador, resultado);
+    private String getTipo(String variable1, String variable2) {
+        String resultado = null;
+        Symols symbol = new Symols();
+        if (isVariable(variable1)) {
+            symbol = symbolTable.get(variable1);
+            resultado = symbol.getType();
+        } else if (isVariable(variable2)) {
+            symbol = symbolTable.get(variable2);
+            resultado = symbol.getType();
         } else {
-            resultado = validateOperandosAndOperator(operando1,operando2, operador, tipo);
-            symbol = symbolTable.get(operando1);
-           
-            System.out.printf("%s %s %s = %s %n", operando1, operador, operando2, resultado);
+            try {
+                Integer.parseInt(variable1);
+                resultado = "int";
+            } catch (NumberFormatException e) {
+                try {
+                    Float.parseFloat(variable1);
+                    resultado = "float";
+                } catch (NumberFormatException f) {
+                    try {
+                        Boolean.parseBoolean(variable1);
+                        resultado = "boolean";
+                    } catch (NumberFormatException g) {
+                        if(variable1.length() > 1)
+                            resultado = "char";
+                        else
+                            resultado = "string";
+                    }
+                }
+            }
         }
         return resultado;
     }
-   
+
     public boolean isVariable(String variable) {
         return symbolTable.containsKey(variable);
     }
-    
-    private String[] setNegation(String operando1, String tipo) {
-        String[] triplo = new String[2];
-        if (tipo.equals("boolean")) {
-            if (operando1.equals("true")) {
-                triplo[0] = "false";
-                triplo[1] = tipo;
-            } else {
-                triplo[0] = "true";
-                triplo[1] = tipo;
-            }
-            return triplo;
-        }
-        return null;
-    }
-   
+
     private int convertStringToInt(String operando) {
         int op = 0;
         if (isVariable(operando)) {
@@ -192,7 +240,7 @@ public class Interpreter {
         }
         return op;
     }
-   
+
     private float convertStringToFloat(String operando) {
         float op = 0;
         if (isVariable(operando)) {
@@ -222,10 +270,9 @@ public class Interpreter {
         }
         return op;
     }
-   
+
     private String validateOperandosAndOperator(String operando1, String operando2, String operador, String tipo) {
-//        System.out.printf("Elementos a evaluar: OP1 = %s OP2 = %s OPR = %s TYPE = %s %n", operando2, operando1, operador, tipo);
-        String[] triplo = new String[2];
+        String resultado = null;
         String ops1 = "";
         String ops2 = "";
         int op1 = 0;
@@ -240,29 +287,27 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 + op2);
-                        triplo[1] = tipo;
+                        resultado = Integer.toString(op1 + op2);
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 + opf2);
-                        triplo[1] = tipo;
+                        resultado = Float.toString(opf1 + opf2);
                         break;
                     case "char":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = "'" + ops1.replace("'", "") + ops2.replace("'", "") + "'";
-                        triplo[1] = tipo;
+                        resultado = "'" + ops1.replace("'", "") + ops2.replace("'", "") + "'";
+
                         break;
                     case "string":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = "\"" + ops1.replace("\"", "") + ops2.replace("\"", "") + "\"";
-                        triplo[1] = tipo;
+                        resultado = "\"" + ops1.replace("\"", "") + ops2.replace("\"", "") + "\"";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "-":
@@ -270,17 +315,17 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 - op2);
-                        triplo[1] = tipo;
+                        resultado = Integer.toString(op1 - op2);
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 - opf2);
-                        triplo[1] = tipo;
+                        resultado = Float.toString(opf1 - opf2);
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "*":
@@ -288,17 +333,17 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 * op2);
-                        triplo[1] = tipo;
+                        resultado = Integer.toString(op1 * op2);
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 * opf2);
-                        triplo[1] = tipo;
+                        resultado = Float.toString(opf1 * opf2);
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "/":
@@ -306,17 +351,17 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 / op2);
-                        triplo[1] = tipo;
+                        resultado = Integer.toString(op1 / op2);
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 / opf2);
-                        triplo[1] = tipo;
+                        resultado = Float.toString(opf1 / opf2);
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "%":
@@ -324,17 +369,17 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 % op2);
-                        triplo[1] = tipo;
+                        resultado = Integer.toString(op1 % op2);
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 % opf2);
-                        triplo[1] = tipo;
+                        resultado = Float.toString(opf1 % opf2);
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "==":
@@ -342,33 +387,33 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 == op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (op1 == op2) ? "true" : "false";
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 == opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (opf1 == opf2) ? "true" : "false";
+
                         break;
                     case "char":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (ops1.equals(ops2)) ? "true" : "false";
+
                         break;
                     case "string":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (ops1.equals(ops2)) ? "true" : "false";
+
                         break;
                     case "boolean":
-                        triplo[0] = (operando2.equals(operando1)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (operando2.equals(operando1)) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "!=":
@@ -376,105 +421,106 @@ public class Interpreter {
                     case "int":
                         op1 = convertStringToInt(operando2);
                         op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 != op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (op1 != op2) ? "true" : "false";
+
                         break;
                     case "float":
                         opf1 = convertStringToFloat(operando2);
                         opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 != opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (opf1 != opf2) ? "true" : "false";
+
                         break;
                     case "char":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (!ops1.equals(ops2)) ? "true" : "false";
+
                         break;
                     case "string":
                         ops1 = getStringValue(operando2);
                         ops2 = getStringValue(operando1);
-                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (!ops1.equals(ops2)) ? "true" : "false";
+
                         break;
                     case "boolean":
-                        triplo[0] = (!operando2.equals(operando1)) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (!operando2.equals(operando1)) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "<":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 < op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+
+                        op1 = convertStringToInt(operando1);
+                        op2 = convertStringToInt(operando2);
+                        resultado = (op1 < op2) ? "true" : "false";
+
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 < opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        opf1 = convertStringToFloat(operando1);
+                        opf2 = convertStringToFloat(operando2);
+                        resultado = (opf1 < opf2) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "<=":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 <= op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        op1 = convertStringToInt(operando1);
+                        op2 = convertStringToInt(operando2);
+                        resultado = (op1 <= op2) ? "true" : "false";
+
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 <= opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        opf1 = convertStringToFloat(operando1);
+                        opf2 = convertStringToFloat(operando2);
+                        resultado = (opf1 <= opf2) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case ">":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 > op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        op1 = convertStringToInt(operando1);
+                        op2 = convertStringToInt(operando2);
+                        resultado = (op1 > op2) ? "true" : "false";
+
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 > opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        opf1 = convertStringToFloat(operando1);
+                        opf2 = convertStringToFloat(operando2);
+                        resultado = (opf1 > opf2) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case ">=":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 >= op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        op1 = convertStringToInt(operando1);
+                        op2 = convertStringToInt(operando2);
+                        resultado = (op1 >= op2) ? "true" : "false";
+
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 >= opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        opf1 = convertStringToFloat(operando1);
+                        opf2 = convertStringToFloat(operando2);
+                        resultado = (opf1 >= opf2) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "&&":
@@ -482,11 +528,11 @@ public class Interpreter {
                     case "boolean":
                         opb1 = getBooleanValue(operando2);
                         opb2 = getBooleanValue(operando1);
-                        triplo[0] = (opb1 && opb2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (opb1 && opb2) ? "true" : "false";
+
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
             case "||":
@@ -494,15 +540,18 @@ public class Interpreter {
                     case "boolean":
                         opb1 = getBooleanValue(operando2);
                         opb2 = getBooleanValue(operando1);
-                        triplo[0] = (opb1 || opb2) ? "true" : "false";
-                        triplo[1] = "boolean";
+                        resultado = (opb1 || opb2) ? "true" : "false";
                         break;
                     default:
-                        triplo = null;
+                        resultado = null;
                 }
                 break;
         }
-        return triplo[0];
+        return resultado;
+    }
+
+    private String setNegacion(String value) {
+        return (value.equals("true")) ? "false" : "true";
     }
 
 }

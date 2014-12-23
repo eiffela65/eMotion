@@ -9,5 +9,5 @@ if (!(A == B))
 C=15;
 else
 C=10;
-endif;
+
 endclass

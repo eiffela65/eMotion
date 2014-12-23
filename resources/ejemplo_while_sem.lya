@@ -1,0 +1,14 @@
+class (ejemplo_while_sem)
+declare A of int;
+declare B of int;
+declare C of int;
+
+A=5;
+B=7;
+C=0;
+
+while (A<B)
+A=(A+1);
+endwhile;
+
+endclass

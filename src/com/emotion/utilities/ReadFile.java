@@ -34,7 +34,7 @@ public class ReadFile {
         return source != null;
     }
 
-    public static boolean readFile(File file) throws FileException, LexicoException {
+    public static void readFile(File file) throws FileException, LexicoException {
         BufferedReader br;
         String fileName = file.getName();
         try {
@@ -63,7 +63,9 @@ public class ReadFile {
             status = sintactic.startAnalisis(fileName);
         }else
             System.out.println("INFO: Analisis Lexico termino con errores.");
-        return status;
+        
+        System.out.println("************  BUILD SUCCESS  **************");
+        System.exit(0);
     }
 
     private static void isLexema(String line) {

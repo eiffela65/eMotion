@@ -1,0 +1,11 @@
+class (holamundo)
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+write("Hola Mundo");
+endclass

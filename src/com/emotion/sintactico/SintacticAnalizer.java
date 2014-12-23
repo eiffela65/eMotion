@@ -71,40 +71,40 @@ public class SintacticAnalizer {
         boolean semanticStatus = true;
         int len = tokens.size();
         this.fileName = fileName;
-        int semanticAction = 0;
         int i = 0;
         System.out.println("************  ANALISIS SINTACTICO  **************");
         while (i < len) {
             if (productions.empty() && rowGramar == 0) {
                 status = fillFirtsProduction(lexemas.get(i), tokens.get(i));
             }
+            
+            if(productions.empty()){
+                status = false;
+                break;
+            }
 
             int currentElement = productions.peek();
-            System.out.println("Tope de la pila:    " + currentElement);
-            System.out.println("Elemento del Lexico:    " + lexemas.get(i));
             if (currentElement == lexemas.get(i)) {  // comparacion con el resultado de lexico
                 productions.pop();
                 i++;
-                System.out.println("_______________________________________________________________________________________");
+//                if (productions.size() < 1) {
+//                    break;
+//                }
                 continue;
             } else {
                 if (currentElement < 100) {
-                    System.out.println("Procesando a un no terminal");
                     productions.pop();
                     status = isValidToken(lexemas.get(i), tokens.get(i), currentElement);
-                    System.out.println("_______________________________________________________________________________________");
                     if (status) {
                         continue;
                     }
                 } else if (currentElement > 899) {
-                    System.out.println("Procesando a una accion semantica");
                     productions.pop();
-                    if (!runSemanticAction(currentElement, tokens.get(i - 1), lexemas.get(i - 1))) {
+                    if (!runSemanticAction(currentElement, tokens.get(i - 1))) {
                         semanticStatus = false;
                         status = false;
                         break;
                     }
-                    System.out.println("_______________________________________________________________________________________");
                     continue;
                 } else {
                     status = false;
@@ -112,50 +112,38 @@ public class SintacticAnalizer {
             }
 
             if (!status) {
-                System.out.println("ERROR: Gramatica no se cumple cerca de: " + tokens.get(i));
                 break;
             }
             i++;
-            //     System.out.println("_______________________________________________________________________________________");
         }
 
         if (status) {
-            System.out.println("INFO: Analisis Sintactico completo sin errores");
-            System.out.println("************  ANALISIS SEMANTICO  **************");
-//            sematicAalizer.showSymbolTable();
-//            sematicAalizer.showCuadruplos();
-            generateFile();
+            if(productions.empty()){
+                System.out.println("INFO: Analisis Sintactico completo sin errores");
+                System.out.println("************  ANALISIS SEMANTICO  **************");
+                generateFile();
+            }else{
+                System.out.println("ERROR: No hay mas elementos a analizar y la gramatica aun no se cumple.");
+            }
         } else {
-            System.out.println("WARNING: Analisis Sintactico detenido.");
-            System.out.println("************  ANALISIS SEMANTICO  **************");
             if (!semanticStatus) {
+                System.out.println("WARNING: Analisis Sintactico detenido.");
+                System.out.println("************  ANALISIS SEMANTICO  **************");
                 System.out.println(semanticErrorMessage);
-                showStack(sematicAalizer.operandos, "OPERANDOS");
-                showStack(sematicAalizer.tipos, "TIPOS");
-                showStack(sematicAalizer.operadores, "OPERADORES");
+            }else{
+                System.out.println("ERROR: Analisis Sintactico detenido.");
             }
             if (!productions.empty()) {
                 System.out.println("ERROR: La pila de producciones no esta vacia.");
                 status = false;
-                showStack(productions, "PRODUCCIONES");
             }
         }
         return status;
     }
 
-    private void showStack(Stack pila, String name) {
-        System.out.println("$$$$$$$$$$$$$$$$$$$ Mostrando la pila de " + name + " $$$$$$$$$$$$$$$$$$$");
-        int size = pila.size();
-        for (int i = 0; i < size; i++) {
-            System.out.println("Elemento de la pila de producciones - " + pila.get(i));
-        }
-    }
-
     private boolean fillFirtsProduction(int lexema, String token) {
         int column = sintacticBase.getColumnByToken(lexema, token);
-        //  System.out.println("[" + rowGramar + " - " + column + "]");
         int prod = sintacticBase.gramar[rowGramar][column];
-        // System.out.println("El valor de la matriz es:   " + prod);
         if (prod == 600) {
             return false;
         }
@@ -166,8 +154,6 @@ public class SintacticAnalizer {
     private boolean isValidToken(int lexema, String token, int row) {
         int column = sintacticBase.getColumnByToken(lexema, token);
         int prod = sintacticBase.gramar[row][column];
-        System.out.println("Columna en base a lexema: " + token);
-        System.out.println("Produccion obtenida en posicion [" + row + " - " + column + "]: " + prod);
         if (prod == 600) {
             return false;
         }
@@ -178,18 +164,13 @@ public class SintacticAnalizer {
     public void insertNewElements(int production) {
         List poductionLine = sintacticBase.getPoduccionesByIndex(production);
         int size = poductionLine.size();
-        //Collections.reverse(poductionLine);
-        //   System.out.println("Elementos de la produccion: " + production + "\n");
         for (int i = size - 1; i >= 0; i--) {
-            //      System.out.print((int) poductionLine.get(i) + "   ");
             productions.add((int) poductionLine.get(i));
         }
-        //    System.out.println("\n");
 
     }
 
-    private boolean runSemanticAction(int semanticAction, String value, int lexema) {
-        System.out.println("Accion: " + semanticAction + "  Valor a analizar: " + value + "  fileName " + fileName);
+    private boolean runSemanticAction(int semanticAction, String value) {
         boolean status = true;
         String operador = "";
         String variable = "";
@@ -275,10 +256,7 @@ public class SintacticAnalizer {
                 }
 
                 while (!sematicAalizer.operandos.peek().equals("(")) {
-                    showStack(sematicAalizer.operandos, "OPERANDOS");
-                    showStack(sematicAalizer.operadores, "OPERADORES");
                     status = buildCuadruplosByNotacionPolaca();
-                    System.out.println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°");
                     if (!status) {
                         break;
                     }
@@ -286,13 +264,11 @@ public class SintacticAnalizer {
                 sematicAalizer.operandos.pop();
                 break;
             case 910: //Si encontramos operador *,/,% en el tope de la pila, generar cuadruplo
-                showStack(sematicAalizer.operadores, "OPERADORES");
                 if (sematicAalizer.isEmptyOperadoresStack()) {
                     status = true;
                     break;
                 }
                 operador = sematicAalizer.operadores.peek();
-                System.out.println(operador);
                 switch (operador) {
                     case "*":
                         status = buildCuadruplosByNotacionPolaca();
@@ -341,7 +317,6 @@ public class SintacticAnalizer {
                 break;
             case 917: //Agregamos operadores relacionales a pila de operadores
                 sematicAalizer.operadores.push(value);
-                showStack(sematicAalizer.operadores, "OPERADORES");
                 break;
             case 918: //Generamos cuadruplo usando operadores relacionales
                 status = buildCuadruplosByNotacionPolaca();
@@ -424,7 +399,7 @@ public class SintacticAnalizer {
                             variable = sematicAalizer.semanticSymbolTable.get(variable).getValue();
                         }
                         symbol = sematicAalizer.semanticSymbolTable.get(resultado);
-                        symbol.setValue(variable);
+//                        symbol.setValue(variable);
                         sematicAalizer.semanticSymbolTable.put(resultado, symbol);
                     } else {
                         status = false;
@@ -522,7 +497,6 @@ public class SintacticAnalizer {
                 sematicAalizer.cuadruplos.set(falso, cuadruplo);
                 break;
             case 933: // Inicio del do-while metiendo retorno a saltos
-                System.out.println("Comenzando el ciclo do-while");
                 sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
                 break;
             case 934: //Despues de analizar la expresion del do-while
@@ -552,7 +526,7 @@ public class SintacticAnalizer {
                 } else {
                     semanticErrorMessage = "ERROR: Tipo de dato no permitido en el estatuto IF, requerido Boolean.";
                     status = false;
-                }                
+                }
                 break;
             case 935: // Estatuto DO-WHILE, crea el cuadruplo
                 break;
@@ -573,7 +547,6 @@ public class SintacticAnalizer {
                 }
                 break;
             case 938:
-                System.out.println("Comenzando el ciclo while");
                 sematicAalizer.saltos.push(sematicAalizer.cuadruplos.size());
                 break;
             case 939:
@@ -582,12 +555,13 @@ public class SintacticAnalizer {
                     cuadruplo = new Cuadruplos();
                     cuadruplo.setOperador("WRITE");
                     String expresion = sematicAalizer.operandos.pop();
-                    if (sematicAalizer.isVariable(expresion)) {
-                        String valor = sematicAalizer.semanticSymbolTable.get(expresion).getValue();
-                        cuadruplo.setOperando1(valor);
-                    } else {
-                        cuadruplo.setOperando1(expresion);
-                    }
+                    cuadruplo.setOperando1(expresion);
+//                    if (sematicAalizer.isVariable(expresion)) {
+//                        String valor = sematicAalizer.semanticSymbolTable.get(expresion).getValue();
+//                        cuadruplo.setOperando1(valor);
+//                    } else {
+//                        cuadruplo.setOperando1(expresion);
+//                    }
                     sematicAalizer.cuadruplos.add(cuadruplo);
                 }
                 break;
@@ -599,28 +573,29 @@ public class SintacticAnalizer {
 
     private boolean buildCuadruplosByNotacionPolaca() {
         Symols symbol = new Symols();
-        System.out.println("***********************    Se construira un cuadruplo");
-        String[] triplo = new String[2];
+        String variableTiplo = null;
+        String temVar = null;
         if (sematicAalizer.isEmptyOperadoresStack() || sematicAalizer.isEmptyOperandosStack() || sematicAalizer.isEmptyTiposStack()) {
             semanticErrorMessage = "ERROR: Pilas vacias, no se puede continuar con el analisis.";
             return false;
         }
-        if (sematicAalizer.operadores.peek().equals("temp")) {
+        if (sematicAalizer.operadores.peek().equals("temp")) {  //  A ( B   A = B
             String valueTemp = sematicAalizer.operandos.pop();
-            String temVar = sematicAalizer.temporal.pop();
+            temVar = sematicAalizer.temporal.pop();
             String typeTemp = sematicAalizer.tipos.peek();
             sematicAalizer.operadores.pop();
             symbol = sematicAalizer.semanticSymbolTable.get(temVar);
-            if (sematicAalizer.isVariable(valueTemp)) {
-                valueTemp = sematicAalizer.semanticSymbolTable.get(valueTemp).getValue();
-            }
-            symbol.setValue(valueTemp);
+//            if (sematicAalizer.isVariable(valueTemp)) {
+//                valueTemp = sematicAalizer.semanticSymbolTable.get(valueTemp).getValue();
+//            }
+//            symbol.setValue(valueTemp);
             symbol.setType(typeTemp);
-            System.out.println("888888888888888888888888   " + temVar);
-            System.out.println("888888888888888888888888   " + typeTemp);
-            System.out.println("888888888888888888888888   " + valueTemp);
             sematicAalizer.semanticSymbolTable.put(temVar, symbol);
-
+            Cuadruplos cuadruplo = new Cuadruplos();
+            cuadruplo.setOperador("=");
+            cuadruplo.setOperando1(valueTemp);
+            cuadruplo.setResultado(temVar);
+            sematicAalizer.cuadruplos.add(cuadruplo);
             return true;
         }
         String operando1 = sematicAalizer.operandos.pop();
@@ -629,18 +604,23 @@ public class SintacticAnalizer {
 
         // Solo cuando es la negacion
         if (operador.equals("!")) {
-            System.out.println("Esta por ejercerse la negacion");
-            triplo = setNegation(operando1, tipoOperador1);
-            if (triplo == null) {
+            variableTiplo = setNegacion(tipoOperador1);
+            if (variableTiplo == null) {
                 semanticErrorMessage = "ERROR: La operacion '" + operador + "' no puede realizar con el operando: '" + operando1 + "' por ser de tipo '" + tipoOperador1 + "'";
                 return false;
             }
-            sematicAalizer.operandos.push(triplo[0]);
-            sematicAalizer.tipos.push(triplo[1]);
+            temVar = "T" + tempIndex;
+            tempIndex++;
+            symbol.setName(temVar);
+            symbol.setType(variableTiplo);
+//            symbol.setValue(triplo[0]);
+            sematicAalizer.semanticSymbolTable.put(temVar, symbol);
+            sematicAalizer.operandos.push(temVar);
+            sematicAalizer.tipos.push(variableTiplo);
             Cuadruplos cuadruplo = new Cuadruplos();
             cuadruplo.setOperador(operador);
             cuadruplo.setOperando1(operando1);
-            cuadruplo.setResultado(triplo[0]);
+            cuadruplo.setResultado(temVar);
             sematicAalizer.cuadruplos.add(cuadruplo);
             return true;
         }
@@ -658,32 +638,31 @@ public class SintacticAnalizer {
             return false;
         }
 
-        System.out.println("OP1 -> " + operando1);
-        System.out.println("OPR -> " + operador);
-
         String operando2 = sematicAalizer.operandos.pop();
         String tipoOperador2 = sematicAalizer.tipos.pop();
-        System.out.println("OP2 -> " + operando2);
-        System.out.println("TipoOP2 -> " + operando2);
         if (!isValidTypes(tipoOperador1, tipoOperador2)) {
             semanticErrorMessage = "ERROR: Los tipos son incompatibles.";
             return false;
         }
-        triplo = validateOperandosAndOperator(operando1, operando2, operador, tipoOperador1);
-        if (triplo == null) {
+        variableTiplo = validateOperandosAndOperator(operando1, operando2, operador, tipoOperador1);
+        if (variableTiplo == null) {
             semanticErrorMessage = "ERROR: La operacion '" + operador + "' no puede realizar entre los operandos: '" + operando1 + "' y '" + operando2 + "'";
             return false;
         }
+        temVar = "T" + tempIndex;
+        tempIndex++;
+        symbol.setName(temVar);
+        symbol.setType(variableTiplo);
+//        symbol.setValue(triplo[0]);
+        sematicAalizer.semanticSymbolTable.put(temVar, symbol);
+        sematicAalizer.operandos.push(temVar);
+        sematicAalizer.tipos.push(variableTiplo);
         Cuadruplos cuadruplo = new Cuadruplos();
         cuadruplo.setOperador(operador);
         cuadruplo.setOperando2(operando1);
         cuadruplo.setOperando1(operando2);
-        cuadruplo.setResultado(triplo[0]);
-        System.out.printf("%s | %s | %s | %s %n", operador, operando1, operando2, triplo[0]);
+        cuadruplo.setResultado(temVar);
         sematicAalizer.cuadruplos.add(cuadruplo);
-        sematicAalizer.operandos.push(triplo[0]);
-        sematicAalizer.tipos.push(triplo[1]);
-        showStack(sematicAalizer.operandos, "OPERANDOS");
         return true;
     }
 
@@ -694,67 +673,12 @@ public class SintacticAnalizer {
         return false;
     }
 
-    private String[] setNegation(String operando1, String tipo) {
-        String[] triplo = new String[2];
-        if (tipo.equals("boolean")) {
-            if (operando1.equals("true")) {
-                triplo[0] = "false";
-                triplo[1] = tipo;
-            } else {
-                triplo[0] = "true";
-                triplo[1] = tipo;
-            }
-            return triplo;
-        }
-        return null;
+    private String setNegacion(String value) {
+        return (value.equals("true")) ? "false" : "true";
     }
 
-    private int convertStringToInt(String operando) {
-
-        sematicAalizer.showSymbolTable();
-
-        int op = 0;
-        if (sematicAalizer.isVariable(operando)) {
-            op = Integer.parseInt(sematicAalizer.semanticSymbolTable.get(operando).getValue());
-        } else {
-            op = Integer.parseInt(operando);
-        }
-        return op;
-    }
-
-    private float convertStringToFloat(String operando) {
-        float op = 0;
-        if (sematicAalizer.isVariable(operando)) {
-            op = Float.parseFloat(sematicAalizer.semanticSymbolTable.get(operando).getValue());
-        } else {
-            op = Float.parseFloat(operando);
-        }
-        return op;
-    }
-
-    private String getStringValue(String operando) {
-        String op = "";
-        if (sematicAalizer.isVariable(operando)) {
-            op = sematicAalizer.semanticSymbolTable.get(operando).getValue();
-        } else {
-            op = operando;
-        }
-        return op;
-    }
-
-    private Boolean getBooleanValue(String operando) {
-        boolean op = false;
-        if (sematicAalizer.isVariable(operando)) {
-            op = Boolean.parseBoolean(sematicAalizer.semanticSymbolTable.get(operando).getValue());
-        } else {
-            op = Boolean.parseBoolean(operando);
-        }
-        return op;
-    }
-
-    private String[] validateOperandosAndOperator(String operando1, String operando2, String operador, String tipo) {
-        System.out.printf("Elementos a evaluar: OP1 = %s OP2 = %s OPR = %s TYPE = %s %n", operando2, operando1, operador, tipo);
-        String[] triplo = new String[2];
+    private String validateOperandosAndOperator(String operando1, String operando2, String operador, String tipo) {
+        String variableTiplo = null;
         String ops1 = "";
         String ops2 = "";
         int op1 = 0;
@@ -767,276 +691,279 @@ public class SintacticAnalizer {
             case "+":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 + op2);
-                        triplo[1] = tipo;
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = Integer.toString(op1 + op2);
+                        variableTiplo = tipo;
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 + opf2);
-                        triplo[1] = tipo;
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = Float.toString(opf1 + opf2);
+                        variableTiplo = tipo;
                         break;
                     case "char":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = "'" + ops1.replace("'", "") + ops2.replace("'", "") + "'";
-                        triplo[1] = tipo;
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = "'" + ops1.replace("'", "") + ops2.replace("'", "") + "'";
+                        variableTiplo = tipo;
                         break;
                     case "string":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = "\"" + ops1.replace("\"", "") + ops2.replace("\"", "") + "\"";
-                        triplo[1] = tipo;
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = "\"" + ops1.replace("\"", "") + ops2.replace("\"", "") + "\"";
+                        variableTiplo = tipo;
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "-":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 - op2);
-                        triplo[1] = tipo;
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = Integer.toString(op1 - op2);
+                        variableTiplo = tipo;
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 - opf2);
-                        triplo[1] = tipo;
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = Float.toString(opf1 - opf2);
+                        variableTiplo = tipo;
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "*":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 * op2);
-                        triplo[1] = tipo;
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = Integer.toString(op1 * op2);
+                        variableTiplo = tipo;
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 * opf2);
-                        triplo[1] = tipo;
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = Float.toString(opf1 * opf2);
+                        variableTiplo = tipo;
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "/":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 / op2);
-                        triplo[1] = tipo;
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = Integer.toString(op1 / op2);
+                        variableTiplo = tipo;
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 / opf2);
-                        triplo[1] = tipo;
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = Float.toString(opf1 / opf2);
+                        variableTiplo = tipo;
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "%":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = Integer.toString(op1 % op2);
-                        triplo[1] = tipo;
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = Integer.toString(op1 % op2);
+                        variableTiplo = tipo;
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = Float.toString(opf1 % opf2);
-                        triplo[1] = tipo;
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = Float.toString(opf1 % opf2);
+                        variableTiplo = tipo;
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "==":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 == op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 == op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 == opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 == opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "char":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "string":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = (ops1.equals(ops2)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "boolean":
-                        triplo[0] = (operando2.equals(operando1)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        triplo[0] = (operando2.equals(operando1)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "!=":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 != op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 != op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 != opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 != opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "char":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "string":
-                        ops1 = getStringValue(operando2);
-                        ops2 = getStringValue(operando1);
-                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        ops1 = getStringValue(operando2);
+//                        ops2 = getStringValue(operando1);
+//                        triplo[0] = (!ops1.equals(ops2)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "boolean":
-                        triplo[0] = (!operando2.equals(operando1)) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        triplo[0] = (!operando2.equals(operando1)) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "<":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 < op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 < op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 < opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 < opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "<=":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 <= op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 <= op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 <= opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 <= opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case ">":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 > op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 > op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 > opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 > opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case ">=":
                 switch (tipo) {
                     case "int":
-                        op1 = convertStringToInt(operando2);
-                        op2 = convertStringToInt(operando1);
-                        triplo[0] = (op1 >= op2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        op1 = convertStringToInt(operando2);
+//                        op2 = convertStringToInt(operando1);
+//                        triplo[0] = (op1 >= op2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     case "float":
-                        opf1 = convertStringToFloat(operando2);
-                        opf2 = convertStringToFloat(operando1);
-                        triplo[0] = (opf1 >= opf2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opf1 = convertStringToFloat(operando2);
+//                        opf2 = convertStringToFloat(operando1);
+//                        triplo[0] = (opf1 >= opf2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "&&":
                 switch (tipo) {
                     case "boolean":
-                        opb1 = getBooleanValue(operando2);
-                        opb2 = getBooleanValue(operando1);
-                        triplo[0] = (opb1 && opb2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opb1 = getBooleanValue(operando2);
+//                        opb2 = getBooleanValue(operando1);
+//                        triplo[0] = (opb1 && opb2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
             case "||":
                 switch (tipo) {
                     case "boolean":
-                        opb1 = getBooleanValue(operando2);
-                        opb2 = getBooleanValue(operando1);
-                        triplo[0] = (opb1 || opb2) ? "true" : "false";
-                        triplo[1] = "boolean";
+//                        opb1 = getBooleanValue(operando2);
+//                        opb2 = getBooleanValue(operando1);
+//                        triplo[0] = (opb1 || opb2) ? "true" : "false";
+                        variableTiplo = "boolean";
                         break;
                     default:
-                        triplo = null;
+                        variableTiplo = null;
                 }
                 break;
         }
-        return triplo;
+        return variableTiplo;
     }
 
     private void generateFile() {
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("./resources/build/" + fileName + ".emn", true)))) {
-            String data = "Class Name: " + fileName + "\n\n";
+        String name = fileName.substring(0, fileName.length() - 4);
+        File file = new File("./resources/build/" + name + ".emn");
+        file.delete();
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("./resources/build/" + name + ".emn", true)))) {
+            String data = "Class Name: " + name + ".emn \n\n";
             out.println(data);
             data = sematicAalizer.showSymbolTable();
             out.println(data);

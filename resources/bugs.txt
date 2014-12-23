@@ -1,2 +1,0 @@
-PENDIENTES.
-1.-Mostrar pila de variables

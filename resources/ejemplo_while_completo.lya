@@ -1,0 +1,17 @@
+class(ejemplo_while_completo)
+declare A of int;
+declare B of int;
+declare cont of int;
+
+A=0;
+B=0;
+cont=0;
+
+read(A,B);
+while(A <= B)
+write("Vuelta numero: ",cont);
+cont=cont+1;
+A=A+1;
+endwhile;
+write("No entre al ciclo");
+endclass

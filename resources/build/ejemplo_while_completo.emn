@@ -1,0 +1,30 @@
+Class Name: ejemplo_while_completo.emn 
+
+
+A # int
+B # int
+T1 # int
+cont # int
+T0 # boolean
+T2 # int
+
+
+
+1 # = # 0 # null # A # 0
+2 # = # 0 # null # B # 0
+3 # = # 0 # null # cont # 0
+4 # READ # A # null # null # 0
+5 # READ # B # null # null # 0
+6 # <= # A # B # T0 # 0
+7 # GOTOF # T0 # null # null # 14
+8 # WRITE # "Vuelta numero: " # null # null # 0
+9 # WRITE # cont # null # null # 0
+10 # + # cont # 1 # T1 # 0
+11 # = # T1 # null # cont # 0
+12 # + # A # 1 # T2 # 0
+13 # = # T2 # null # A # 0
+14 # GOTO # null # null # null # 5
+15 # WRITE # "No entre al ciclo" # null # null # 0
+
+
+
