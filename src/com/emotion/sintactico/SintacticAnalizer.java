@@ -539,10 +539,11 @@ public class SintacticAnalizer {
                 variables.add(value);
                 break;
             case 937:
-                for (String expresion : variables) {
+                int tamano = variables.size();
+                for(int i= 0; i < tamano ; i++){
                     cuadruplo = new Cuadruplos();
                     cuadruplo.setOperador("READ");
-                    cuadruplo.setOperando1(expresion);
+                    cuadruplo.setOperando1(variables.pop());
                     sematicAalizer.cuadruplos.add(cuadruplo);
                 }
                 break;

@@ -31,34 +31,28 @@ Z # int
 9 # WRITE # "Introduzca un valor para W" # null # null # 0
 10 # READ # W # null # null # 0
 11 # WRITE # "Introduzca un valor para X" # null # null # 0
-12 # READ # W # null # null # 0
-13 # READ # X # null # null # 0
-14 # WRITE # "Introduzca un valor para Y" # null # null # 0
-15 # READ # W # null # null # 0
-16 # READ # X # null # null # 0
-17 # READ # Y # null # null # 0
-18 # WRITE # "Introduzca un valor para Z" # null # null # 0
-19 # READ # W # null # null # 0
-20 # READ # X # null # null # 0
-21 # READ # Y # null # null # 0
-22 # READ # Z # null # null # 0
-23 # > # W # X # T0 # 0
-24 # GOTOF # T0 # null # null # 35
-25 # * # AA # 5 # T2 # 0
-26 # = # T2 # null # T1 # 0
-27 # = # T1 # null # resAA # 0
-28 # WRITE # resAA # null # null # 0
-29 # < # Y # Z # T3 # 0
-30 # GOTOF # T3 # null # null # 34
-31 # * # AAA # 3 # T5 # 0
-32 # = # T5 # null # T4 # 0
-33 # = # T4 # null # resAAA # 0
-34 # WRITE # resAAA # null # null # 0
-35 # GOTO # null # null # null # 39
-36 # * # AA # 2 # T7 # 0
-37 # = # T7 # null # T6 # 0
-38 # = # T6 # null # resAA # 0
-39 # WRITE # resAA # null # null # 0
+12 # READ # X # null # null # 0
+13 # WRITE # "Introduzca un valor para Y" # null # null # 0
+14 # READ # Y # null # null # 0
+15 # WRITE # "Introduzca un valor para Z" # null # null # 0
+16 # READ # Z # null # null # 0
+17 # > # W # X # T0 # 0
+18 # GOTOF # T0 # null # null # 29
+19 # * # AA # 5 # T2 # 0
+20 # = # T2 # null # T1 # 0
+21 # = # T1 # null # resAA # 0
+22 # WRITE # resAA # null # null # 0
+23 # < # Y # Z # T3 # 0
+24 # GOTOF # T3 # null # null # 28
+25 # * # AAA # 3 # T5 # 0
+26 # = # T5 # null # T4 # 0
+27 # = # T4 # null # resAAA # 0
+28 # WRITE # resAAA # null # null # 0
+29 # GOTO # null # null # null # 33
+30 # * # AA # 2 # T7 # 0
+31 # = # T7 # null # T6 # 0
+32 # = # T6 # null # resAA # 0
+33 # WRITE # resAA # null # null # 0
 
 
 

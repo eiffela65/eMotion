@@ -64,7 +64,7 @@ public class SemanticAnalizer {
         System.out.println("--- TABLA DE SIMBOLOS ---");
         for (Map.Entry<String, Symols> entry : semanticSymbolTable.entrySet()) {
 //            System.out.printf("Key : %s and Variable: %s and Type: %s and Value: %s %n", entry.getKey(), entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
-            System.out.printf("Variable: %s | Type: %s | Value: %s %n", entry.getValue().getName(), entry.getValue().getType(), entry.getValue().getValue());
+            System.out.printf("Variable: %s | Type: %s %n", entry.getValue().getName(), entry.getValue().getType());
             data += entry.getValue().getName() + " # " + entry.getValue().getType() + "\n";
         }
         data += "\n\n";
